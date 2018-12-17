@@ -63,5 +63,10 @@ namespace Cyriller.Checker
         {
             OpenForm(new NounRuleForm());
         }
+
+        private void msiExportToJson_Click(object sender, EventArgs e)
+        {
+            OpenForm(new JsonForm());
+        }
     }
 }

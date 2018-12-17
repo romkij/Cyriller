@@ -146,6 +146,11 @@ namespace Cyriller
             return noun;
         }
 
+        public IEnumerable<string> SelectWords()
+        {
+            return this.words.Select(x => x.Key);
+        }
+
         protected List<string> GetSimilarDetails(string word, out string collectionWord)
         {
             CyrData data = new CyrData();

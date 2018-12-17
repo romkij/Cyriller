@@ -108,6 +108,21 @@ namespace Cyriller
             return adj;
         }
 
+        public IEnumerable<string> SelectMasculineWords()
+        {
+            return this.masculineWords.Select(x => x.Key);
+        }
+
+        public IEnumerable<string> SelectFeminineWords()
+        {
+            return this.feminineWords.Select(x => x.Key);
+        }
+
+        public IEnumerable<string> SelectNeuterWords()
+        {
+            return this.neuterWords.Select(x => x.Key);
+        }
+
         protected string GetStrictDetails(ref string word, ref GendersEnum gender)
         {
             string details = this.GetDictionaryItem(word, this.masculineWords);

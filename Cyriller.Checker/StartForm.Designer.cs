@@ -44,6 +44,7 @@
             this.msiRule = new System.Windows.Forms.ToolStripMenuItem();
             this.msiRuleNoun = new System.Windows.Forms.ToolStripMenuItem();
             this.pnlContainer = new System.Windows.Forms.Panel();
+            this.msiExportToJson = new System.Windows.Forms.ToolStripMenuItem();
             this.tableLayoutPanel1.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -139,7 +140,8 @@
             // 
             this.msiDictionary.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.msiZipDictionary,
-            this.msiRule});
+            this.msiRule,
+            this.msiExportToJson});
             this.msiDictionary.Name = "msiDictionary";
             this.msiDictionary.Size = new System.Drawing.Size(66, 26);
             this.msiDictionary.Text = "Словарь";
@@ -147,7 +149,7 @@
             // msiZipDictionary
             // 
             this.msiZipDictionary.Name = "msiZipDictionary";
-            this.msiZipDictionary.Size = new System.Drawing.Size(152, 22);
+            this.msiZipDictionary.Size = new System.Drawing.Size(180, 22);
             this.msiZipDictionary.Text = "Запаковать";
             this.msiZipDictionary.Click += new System.EventHandler(this.msiZipDictionary_Click);
             // 
@@ -156,7 +158,7 @@
             this.msiRule.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.msiRuleNoun});
             this.msiRule.Name = "msiRule";
-            this.msiRule.Size = new System.Drawing.Size(152, 22);
+            this.msiRule.Size = new System.Drawing.Size(180, 22);
             this.msiRule.Text = "Правило";
             // 
             // msiRuleNoun
@@ -173,6 +175,13 @@
             this.pnlContainer.Name = "pnlContainer";
             this.pnlContainer.Size = new System.Drawing.Size(978, 525);
             this.pnlContainer.TabIndex = 1;
+            // 
+            // msiExportToJson
+            // 
+            this.msiExportToJson.Name = "msiExportToJson";
+            this.msiExportToJson.Size = new System.Drawing.Size(180, 22);
+            this.msiExportToJson.Text = "Выгрузить в JSON";
+            this.msiExportToJson.Click += new System.EventHandler(this.msiExportToJson_Click);
             // 
             // StartForm
             // 
@@ -212,5 +221,6 @@
         private System.Windows.Forms.ToolStripMenuItem msiZipDictionary;
         private System.Windows.Forms.ToolStripMenuItem msiRule;
         private System.Windows.Forms.ToolStripMenuItem msiRuleNoun;
+        private System.Windows.Forms.ToolStripMenuItem msiExportToJson;
     }
 }

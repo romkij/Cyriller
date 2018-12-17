@@ -2,6 +2,8 @@
 {
     public enum WordTypesEnum
     {
+        None = 0,
+
         /// <summary>
         /// Аббревиатура
         /// </summary>
