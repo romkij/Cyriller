@@ -21,9 +21,9 @@ namespace Cyriller
         {
         }
 
-        public TextReader GetData(string FileName)
+        public TextReader GetData(string fileName)
         {
-            Stream stream = typeof(CyrData).Assembly.GetManifestResourceStream("Cyriller.App_Data." + FileName);
+            Stream stream = typeof(CyrData).Assembly.GetManifestResourceStream("Cyriller.App_Data." + fileName);
             GZipStream gzip = new GZipStream(stream, CompressionMode.Decompress);
             TextReader treader = new StreamReader(gzip);
 
@@ -31,44 +31,44 @@ namespace Cyriller
         }
 
         /// <summary>Search for similar words in the collection</summary>
-        /// <param name="Word">The word to search for</param>
-        /// <param name="Collection">The collection to look in</param>
-        /// <param name="MinSameLetters">The minimum number of matching letters, from the right end, min value - <see cref="DefaultMinSameLetters"/></param>
-        public string GetSimilar(string Word, IEnumerable<string> Collection, int MinSameLetters = DefaultMinSameLetters)
+        /// <param name="word">The word to search for</param>
+        /// <param name="collection">The collection to look in</param>
+        /// <param name="minSameLetters">The minimum number of matching letters, from the right end, min value - <see cref="DefaultMinSameLetters"/></param>
+        public string GetSimilar(string word, IEnumerable<string> collection, int minSameLetters = DefaultMinSameLetters)
         {
-            if (MinSameLetters < DefaultMinSameLetters)
+            if (minSameLetters < DefaultMinSameLetters)
             {
-                throw new ArgumentOutOfRangeException($"{nameof(MinSameLetters)} value can not be smaller than {DefaultMinSameLetters}!");
+                throw new ArgumentOutOfRangeException($"{nameof(minSameLetters)} value can not be smaller than {DefaultMinSameLetters}!");
             }
 
-            if (Word == null || Word.Length < MinSameLetters)
+            if (word == null || word.Length < minSameLetters)
             {
-                return Word;
+                return word;
             }
 
             string foundWord = null;
             ConcurrentBag<SimilarCandidate> candidates = new ConcurrentBag<SimilarCandidate>();
 
-            Parallel.ForEach(Collection, (str, loopState) =>
+            Parallel.ForEach(collection, (str, loopState) =>
             {
-                if (str == Word)
+                if (str == word)
                 {
                     foundWord = str;
                     loopState.Stop();
                     return;
                 }
 
-                int maxPosition = Math.Min(Word.Length, str.Length);
+                int maxPosition = Math.Min(word.Length, str.Length);
                 int weight = 0;
 
                 for (int i = 1; i <= maxPosition; i++)
                 {
-                    if (str[str.Length - i] == Word[Word.Length - i])
+                    if (str[str.Length - i] == word[word.Length - i])
                     {
                         int wi = i - 1;
                         weight += wi < SameLetterWeights.Length ? SameLetterWeights[wi] : 1;
                     }
-                    else if (i <= MinSameLetters)
+                    else if (i <= minSameLetters)
                     {
                         return;
                     }

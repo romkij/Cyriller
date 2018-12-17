@@ -58,35 +58,35 @@ namespace Cyriller
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="Word">Прилагательное</param>
-        /// <param name="DefaultGender">Пол, в котором указано прилагательное, используется при поиске неточных совпадений</param>
+        /// <param name="word">Прилагательное</param>
+        /// <param name="defaultGender">Пол, в котором указано прилагательное, используется при поиске неточных совпадений</param>
         /// <returns></returns>
-        public CyrAdjective Get(string Word, GendersEnum DefaultGender = GendersEnum.Masculine)
+        public CyrAdjective Get(string word, GendersEnum defaultGender = GendersEnum.Masculine)
         {
-            return this.Get(Word, GetConditionsEnum.Strict, DefaultGender);
+            return this.Get(word, GetConditionsEnum.Strict, defaultGender);
         }
 
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="Word">Прилагательное</param>
-        /// <param name="Condition">Вариант поиска в словаре</param>
-        /// <param name="DefaultGender">Пол, в котором указано прилагательное, используется при поиске неточных совпадений</param>
+        /// <param name="word">Прилагательное</param>
+        /// <param name="condition">Вариант поиска в словаре</param>
+        /// <param name="defaultGender">Пол, в котором указано прилагательное, используется при поиске неточных совпадений</param>
         /// <returns></returns>
-        public CyrAdjective Get(string Word, GetConditionsEnum Condition, GendersEnum DefaultGender = GendersEnum.Masculine)
+        public CyrAdjective Get(string word, GetConditionsEnum condition, GendersEnum defaultGender = GendersEnum.Masculine)
         {
             GendersEnum gender = GendersEnum.Masculine;
-            string t = Word;
+            string t = word;
             string details = this.GetStrictDetails(ref t, ref gender);
 
-            if (details.IsNullOrEmpty() && Condition == GetConditionsEnum.Similar)
+            if (details.IsNullOrEmpty() && condition == GetConditionsEnum.Similar)
             {
-                details = this.GetSimilarDetails(Word, DefaultGender, ref gender, out t);
+                details = this.GetSimilarDetails(word, defaultGender, ref gender, out t);
             }
 
             if (details.IsNullOrEmpty())
             {
-                throw new CyrWordNotFoundException(Word);
+                throw new CyrWordNotFoundException(word);
             }
 
             int ruleID = int.Parse(details);
@@ -96,110 +96,110 @@ namespace Cyriller
 
             if (gender == GendersEnum.Feminine)
             {
-                Word = rules[22].Apply(Word);
+                word = rules[22].Apply(word);
             }
             else if(gender == GendersEnum.Neuter)
             {
-                Word = rules[23].Apply(Word);
+                word = rules[23].Apply(word);
             }
 
-            CyrAdjective adj = new CyrAdjective(Word, t, gender, rules);
+            CyrAdjective adj = new CyrAdjective(word, t, gender, rules);
 
             return adj;
         }
 
-        protected string GetStrictDetails(ref string Word, ref GendersEnum Gender)
+        protected string GetStrictDetails(ref string word, ref GendersEnum gender)
         {
-            string details = this.GetDictionaryItem(Word, this.masculineWords);
+            string details = this.GetDictionaryItem(word, this.masculineWords);
 
             if (details.IsNullOrEmpty())
             {
-                KeyValuePair<string, string> f = this.GetDictionaryItem(Word, this.feminineWords);
+                KeyValuePair<string, string> f = this.GetDictionaryItem(word, this.feminineWords);
 
                 if (f.Key.IsNotNullOrEmpty())
                 {
-                    Word = f.Key;
+                    word = f.Key;
                     details = f.Value;
-                    Gender = GendersEnum.Feminine;
+                    gender = GendersEnum.Feminine;
                 }
             }
 
             if (details.IsNullOrEmpty())
             {
-                KeyValuePair<string, string> f = this.GetDictionaryItem(Word, this.neuterWords);
+                KeyValuePair<string, string> f = this.GetDictionaryItem(word, this.neuterWords);
 
                 if (f.Key.IsNotNullOrEmpty())
                 {
-                    Word = f.Key;
+                    word = f.Key;
                     details = f.Value;
-                    Gender = GendersEnum.Neuter;
+                    gender = GendersEnum.Neuter;
                 }
             }
 
             return details;
         }
 
-        protected string GetSimilarDetails(string Word, GendersEnum DefaultGender, ref GendersEnum Gender, out string FoundWord)
+        protected string GetSimilarDetails(string word, GendersEnum defaultGender, ref GendersEnum gender, out string foundWord)
         {
-            string similar = Word;
+            string similar = word;
             KeyValuePair<string, string> v;
 
-            switch (DefaultGender)
+            switch (defaultGender)
             {
                 case GendersEnum.Feminine:
-                    v = this.GetSimilarDetails(Word, this.feminineWords, out FoundWord);
+                    v = this.GetSimilarDetails(word, this.feminineWords, out foundWord);
                     similar = v.Key;
-                    Gender = GendersEnum.Feminine;
+                    gender = GendersEnum.Feminine;
                     break;
                 case GendersEnum.Neuter:
-                    v = this.GetSimilarDetails(Word, this.neuterWords, out FoundWord);
+                    v = this.GetSimilarDetails(word, this.neuterWords, out foundWord);
                     similar = v.Key;
-                    Gender = GendersEnum.Neuter;
+                    gender = GendersEnum.Neuter;
                     break;
             }
 
-            string details = this.GetSimilarDetails(similar, this.masculineWords, out FoundWord);
+            string details = this.GetSimilarDetails(similar, this.masculineWords, out foundWord);
 
-            if (details.IsNullOrEmpty() && DefaultGender == 0)
+            if (details.IsNullOrEmpty() && defaultGender == 0)
             {
-                v = this.GetSimilarDetails(Word, this.feminineWords, out FoundWord);
+                v = this.GetSimilarDetails(word, this.feminineWords, out foundWord);
                 similar = v.Key;
-                Gender = GendersEnum.Feminine;
-                details = this.GetSimilarDetails(similar, this.masculineWords, out FoundWord);
+                gender = GendersEnum.Feminine;
+                details = this.GetSimilarDetails(similar, this.masculineWords, out foundWord);
             }
 
-            if (details.IsNullOrEmpty() && DefaultGender == 0)
+            if (details.IsNullOrEmpty() && defaultGender == 0)
             {
-                v = this.GetSimilarDetails(Word, this.neuterWords, out FoundWord);
+                v = this.GetSimilarDetails(word, this.neuterWords, out foundWord);
                 similar = v.Key;
-                Gender = GendersEnum.Neuter;
-                details = this.GetSimilarDetails(similar, this.masculineWords, out FoundWord);
+                gender = GendersEnum.Neuter;
+                details = this.GetSimilarDetails(similar, this.masculineWords, out foundWord);
             }
 
             return details;
         }
 
-        protected T GetDictionaryItem<T>(string Key, Dictionary<string, T> Items)
+        protected T GetDictionaryItem<T>(string key, Dictionary<string, T> items)
         {
-            string t = Key;
-            T details = this.GetDetails(t, Items);
+            string t = key;
+            T details = this.GetDetails(t, items);
 
             if (details == null)
             {
-                t = Key.ToLower();
-                details = this.GetDetails(t, Items);
+                t = key.ToLower();
+                details = this.GetDetails(t, items);
             }
 
             if (details == null)
             {
-                t = Key.ToLower().UppercaseFirst();
-                details = this.GetDetails(t, Items);
+                t = key.ToLower().UppercaseFirst();
+                details = this.GetDetails(t, items);
             }
 
             if (details == null)
             {
                 List<int> indexes = new List<int>();
-                string lower = Key.ToLower();
+                string lower = key.ToLower();
 
                 for (int i = 0; i < lower.Length; i++)
                 {
@@ -212,7 +212,7 @@ namespace Cyriller
                 foreach (int index in indexes)
                 {
                     t = lower.Substring(0, index) + "ё" + lower.Substring(index + 1);
-                    details = this.GetDetails(t, Items);
+                    details = this.GetDetails(t, items);
 
                     if (details != null)
                     {
@@ -224,25 +224,25 @@ namespace Cyriller
             return details;
         }
 
-        protected T GetSimilarDetails<T>(string Word, Dictionary<string, T> Collection, out string CollectionWord)
+        protected T GetSimilarDetails<T>(string word, Dictionary<string, T> collection, out string collectionWord)
         {
             CyrData data = new CyrData();
 
-            CollectionWord = data.GetSimilar(Word, Collection.Keys.ToList(), this.AdjectiveMinSameLetters);
+            collectionWord = data.GetSimilar(word, collection.Keys.ToList(), this.AdjectiveMinSameLetters);
 
-            if (CollectionWord.IsNullOrEmpty())
+            if (collectionWord.IsNullOrEmpty())
             {
                 return default(T);
             }
 
-            return this.GetDetails(CollectionWord, Collection);
+            return this.GetDetails(collectionWord, collection);
         }
 
-        protected T GetDetails<T>(string Word, Dictionary<string, T> Collection)
+        protected T GetDetails<T>(string word, Dictionary<string, T> collection)
         {
-            if (Collection.ContainsKey(Word))
+            if (collection.ContainsKey(word))
             {
-                return Collection[Word];
+                return collection[word];
             }
 
             return default(T);

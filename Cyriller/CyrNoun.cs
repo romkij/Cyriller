@@ -19,19 +19,19 @@ namespace Cyriller
         protected CyrRule[] rules;
         protected int rulesOffset = 11;
 
-        public CyrNoun(string Name, GendersEnum Gender, AnimatesEnum Animate, WordTypesEnum Type, CyrRule[] Rules)
-            : this(Name, Name, Gender, Animate, Type, Rules)
+        public CyrNoun(string name, GendersEnum gender, AnimatesEnum animate, WordTypesEnum type, CyrRule[] rules)
+            : this(name, name, gender, animate, type, rules)
         {
         }
 
-        public CyrNoun(string Name, string CollectionName, GendersEnum Gender, AnimatesEnum Animate, WordTypesEnum Type, CyrRule[] Rules)
+        public CyrNoun(string name, string collectionName, GendersEnum gender, AnimatesEnum animate, WordTypesEnum type, CyrRule[] rules)
         {
-            this.collectionName = CollectionName;
-            this.name = Name;
-            this.gender = Gender;
-            this.animate = Animate;
-            this.type = Type;
-            this.rules = Rules;
+            this.collectionName = collectionName;
+            this.name = name;
+            this.gender = gender;
+            this.animate = animate;
+            this.type = type;
+            this.rules = rules;
         }
 
         public bool IsAnimated

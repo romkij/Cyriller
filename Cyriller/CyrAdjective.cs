@@ -18,15 +18,15 @@ namespace Cyriller
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="Name">Прилагательное мужского рода в именительном падеже</param>
-        /// <param name="CollectionName">Слово найденное в коллекции</param>
-        /// <param name="Gender">Пол для склонения</param>
+        /// <param name="name">Прилагательное мужского рода в именительном падеже</param>
+        /// <param name="collectionName">Слово найденное в коллекции</param>
+        /// <param name="gender">Пол для склонения</param>
         /// <param name="rules">Правила склонения</param>
-        public CyrAdjective(string Name, string CollectionName, GendersEnum Gender, CyrRule[] rules)
+        public CyrAdjective(string name, string collectionName, GendersEnum gender, CyrRule[] rules)
         {
-            this.name = Name;
-            this.collectionName = CollectionName;
-            this.gender = Gender;
+            this.name = name;
+            this.collectionName = collectionName;
+            this.gender = gender;
             this.rules = rules;
         }
 
@@ -62,7 +62,7 @@ namespace Cyriller
             }
         }
 
-        public CyrResult Decline(AnimatesEnum Animate)
+        public CyrResult Decline(AnimatesEnum animate)
         {
             CyrResult result;
 
@@ -89,7 +89,7 @@ namespace Cyriller
                 result = new CyrResult(this.name,
                     this.rules[0].Apply(this.name),
                     this.rules[1].Apply(this.name),
-                    Animate == AnimatesEnum.Animated ? this.rules[2].Apply(this.name) : this.name,
+                    animate == AnimatesEnum.Animated ? this.rules[2].Apply(this.name) : this.name,
                     this.rules[3].Apply(this.name),
                     this.rules[4].Apply(this.name));
             }
@@ -97,12 +97,12 @@ namespace Cyriller
             return result;
         }
 
-        public CyrResult DeclinePlural(AnimatesEnum Animate)
+        public CyrResult DeclinePlural(AnimatesEnum animate)
         {
             CyrResult result = new CyrResult(this.rules[17].Apply(this.name),
                 this.rules[18].Apply(this.name),
                 this.rules[19].Apply(this.name),
-                Animate == AnimatesEnum.Animated ? this.rules[21].Apply(this.name) : this.rules[17].Apply(this.name),
+                animate == AnimatesEnum.Animated ? this.rules[21].Apply(this.name) : this.rules[17].Apply(this.name),
                 this.rules[20].Apply(this.name),
                 this.rules[21].Apply(this.name));
 

@@ -22,16 +22,16 @@ namespace Cyriller
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="Rule">
+        /// <param name="rule">
         /// String describing declension rule.
         /// For example:
         /// "ен2" - cut 2 characters from the end, then append "ен" at the end.
         /// "ым" - do not cut any characters from the end, but append "ым" at the end.
         /// "*" - the rule is not applicable, will always return <see cref="String.Empty"/> when applied with <see cref="CyrRule.Apply(string)"/>.
         /// </param>
-        public CyrRule(string Rule)
+        public CyrRule(string rule)
         {
-            if (string.IsNullOrEmpty(Rule))
+            if (string.IsNullOrEmpty(rule))
             {
                 this.end = string.Empty;
                 this.cut = 0;
@@ -41,15 +41,15 @@ namespace Cyriller
             Regex reg = new Regex(@"\d", RegexOptions.IgnoreCase);
             string temp;
 
-            this.end = reg.Replace(Rule, string.Empty);
+            this.end = reg.Replace(rule, string.Empty);
 
             if (this.end.Length > 0)
             {
-                temp = Rule.Replace(this.end, string.Empty);
+                temp = rule.Replace(this.end, string.Empty);
             }
             else
             {
-                temp = Rule;
+                temp = rule;
             }
 
             if (temp.IsNullOrEmpty())
@@ -65,23 +65,23 @@ namespace Cyriller
         /// <summary>
         /// Applies declension rule on the specified word.
         /// </summary>
-        /// <param name="Name">The word to apply declension to.</param>
+        /// <param name="name">The word to apply declension to.</param>
         /// <returns></returns>
-        public string Apply(string Name)
+        public string Apply(string name)
         {
             if (this.end == "*")
             {
                 return string.Empty;
             }
 
-            int length = Name.Length - cut;
+            int length = name.Length - cut;
 
             if (length <= 0)
             {
                 return this.end;
             }
 
-            return Name.Substring(0, length) + end;
+            return name.Substring(0, length) + end;
         }
     }
 }

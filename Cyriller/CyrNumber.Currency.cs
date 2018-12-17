@@ -15,8 +15,8 @@ namespace Cyriller
             public GendersEnum DecimalGender { get; set; }
             public int Decimals { get; set; }
 
-            public abstract string[] GetIntegerName(CasesEnum Case);
-            public abstract string[] GetDecimalName(CasesEnum Case);
+            public abstract string[] GetIntegerName(CasesEnum @case);
+            public abstract string[] GetDecimalName(CasesEnum @case);
         }
 
         public class RurCurrency : Currency
@@ -28,9 +28,9 @@ namespace Cyriller
                 this.Decimals = 2;
             }
 
-            public override string[] GetIntegerName(CasesEnum Case)
+            public override string[] GetIntegerName(CasesEnum @case)
             {
-                switch (Case)
+                switch (@case)
                 {
                     case CasesEnum.Nominative:
                         return new string[] { "рубль", "рубля", "рублей" };
@@ -49,9 +49,9 @@ namespace Cyriller
                 throw new ArgumentOutOfRangeException("Invalid decline case!");
             }
 
-            public override string[] GetDecimalName(CasesEnum Case)
+            public override string[] GetDecimalName(CasesEnum @case)
             {
-                switch (Case)
+                switch (@case)
                 {
                     case CasesEnum.Nominative:
                         return new string[] { "копейка", "копейки", "копеек" };
@@ -101,9 +101,9 @@ namespace Cyriller
                 throw new ArgumentOutOfRangeException("Invalid decline case!");
             }
 
-            public override string[] GetDecimalName(CasesEnum Case)
+            public override string[] GetDecimalName(CasesEnum @case)
             {
-                switch (Case)
+                switch (@case)
                 {
                     case CasesEnum.Nominative:
                         return new string[] { "цент", "цента", "центов" };
@@ -132,9 +132,9 @@ namespace Cyriller
                 this.Decimals = 2;
             }
 
-            public override string[] GetIntegerName(CasesEnum Case)
+            public override string[] GetIntegerName(CasesEnum @case)
             {
-                switch (Case)
+                switch (@case)
                 {
                     case CasesEnum.Nominative:
                         return new string[] { "евро", "евро", "евро" };
@@ -153,9 +153,9 @@ namespace Cyriller
                 throw new ArgumentOutOfRangeException("Invalid decline case!");
             }
 
-            public override string[] GetDecimalName(CasesEnum Case)
+            public override string[] GetDecimalName(CasesEnum @case)
             {
-                switch (Case)
+                switch (@case)
                 {
                     case CasesEnum.Nominative:
                         return new string[] { "цент", "цента", "центов" };
@@ -184,9 +184,9 @@ namespace Cyriller
                 this.Decimals = 1;
             }
 
-            public override string[] GetIntegerName(CasesEnum Case)
+            public override string[] GetIntegerName(CasesEnum @case)
             {
-                switch (Case)
+                switch (@case)
                 {
                     case CasesEnum.Nominative:
                         return new string[] { "юань", "юаня", "юаней" };

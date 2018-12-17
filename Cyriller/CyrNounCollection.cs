@@ -51,32 +51,32 @@ namespace Cyriller
             treader.Dispose();
         }
 
-        public CyrNoun Get(string Word)
+        public CyrNoun Get(string word)
         {
-            return this.Get(Word, GetConditionsEnum.Strict);
+            return this.Get(word, GetConditionsEnum.Strict);
         }
 
-        public CyrNoun Get(string Word, GetConditionsEnum Condition, GendersEnum? GenderID = null, AnimatesEnum? AnimateID = null, WordTypesEnum? TypeID = null)
+        public CyrNoun Get(string word, GetConditionsEnum condition, GendersEnum? genderID = null, AnimatesEnum? animateID = null, WordTypesEnum? typeID = null)
         {
-            string t = Word;
+            string t = word;
             List<string> list = this.GetDetails(t);
 
             if (list == null || !list.Any())
             {
-                t = Word.ToLower();
+                t = word.ToLower();
                 list = this.GetDetails(t);
             }
 
             if (list == null || !list.Any())
             {
-                t = Word.ToLower().UppercaseFirst();
+                t = word.ToLower().UppercaseFirst();
                 list = this.GetDetails(t);
             }
 
             if (list == null || !list.Any())
             {
                 List<int> indexes = new List<int>();
-                string lower = Word.ToLower();
+                string lower = word.ToLower();
 
                 for (int i = 0; i < lower.Length; i++)
                 {
@@ -98,78 +98,78 @@ namespace Cyriller
                 }
             }
 
-            if ((list == null || !list.Any()) && Condition == GetConditionsEnum.Similar)
+            if ((list == null || !list.Any()) && condition == GetConditionsEnum.Similar)
             {
-                list = this.GetSimilarDetails(Word, out t);
+                list = this.GetSimilarDetails(word, out t);
             }
 
             if (list == null || !list.Any())
             {
-                throw new CyrWordNotFoundException(Word);
+                throw new CyrWordNotFoundException(word);
             }
 
             IEnumerable<CyrNounCollectionRow> rows = list.Select(x => CyrNounCollectionRow.Parse(x));
             IEnumerable<CyrNounCollectionRow> filter = rows;
 
-            if (GenderID.HasValue)
+            if (genderID.HasValue)
             {
-                filter = filter.Where(x => x.GenderID == (int)GenderID);
+                filter = filter.Where(x => x.GenderID == (int)genderID);
             }
 
-            if (AnimateID.HasValue)
+            if (animateID.HasValue)
             {
-                filter = filter.Where(x => x.AnimateID == (int)AnimateID);
+                filter = filter.Where(x => x.AnimateID == (int)animateID);
             }
 
-            if (TypeID.HasValue)
+            if (typeID.HasValue)
             {
-                filter = filter.Where(x => x.TypeID == (int)TypeID);
+                filter = filter.Where(x => x.TypeID == (int)typeID);
             }
 
             CyrNounCollectionRow row = filter.FirstOrDefault();
 
-            if (row == null && Condition == GetConditionsEnum.Similar)
+            if (row == null && condition == GetConditionsEnum.Similar)
             {
                 row = rows.FirstOrDefault();
             }
 
             if (row == null)
             {
-                throw new CyrWordNotFoundException(Word);
+                throw new CyrWordNotFoundException(word);
             }
 
             string[] parts = this.rules[row.RuleID].Split(new char[] { ',', '|' });
 
             CyrRule[] rules = parts.Select(val => new CyrRule(val)).ToArray();
-            CyrNoun noun = new CyrNoun(Word, t, (GendersEnum)row.GenderID, (AnimatesEnum)row.AnimateID, (WordTypesEnum)row.TypeID, rules);
+            CyrNoun noun = new CyrNoun(word, t, (GendersEnum)row.GenderID, (AnimatesEnum)row.AnimateID, (WordTypesEnum)row.TypeID, rules);
 
             return noun;
         }
 
-        protected List<string> GetSimilarDetails(string Word, out string CollectionWord)
+        protected List<string> GetSimilarDetails(string word, out string collectionWord)
         {
             CyrData data = new CyrData();
             
-            CollectionWord = data.GetSimilar(Word, words.Keys.ToList());
+            collectionWord = data.GetSimilar(word, words.Keys.ToList());
 
-            if (CollectionWord.IsNullOrEmpty())
+            if (collectionWord.IsNullOrEmpty())
             {
                 return null;
             }
 
-            return this.GetDetails(CollectionWord);
+            return this.GetDetails(collectionWord);
         }
 
-        protected List<string> GetDetails(string Word)
+        protected List<string> GetDetails(string word)
         {
-            if (Word.IsNullOrEmpty())
+            if (word.IsNullOrEmpty())
             {
                 return null;
             }
 
-            if (words.ContainsKey(Word))
+            if (words.ContainsKey(word))
             {
-                return words[Word];
+                return words[word];
             }
 
             return null;

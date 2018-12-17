@@ -4,10 +4,10 @@ namespace Cyriller
 {
     public class CyrWordNotFoundException : Exception
     {
-        public CyrWordNotFoundException(string Word)
-            : base("The word was not found in the collection. Word: [" + Word + "].")
+        public CyrWordNotFoundException(string word)
+            : base("The word was not found in the collection. Word: [" + word + "].")
         {
-            this.Word = Word;
+            this.Word = word;
         }
 
         public string Word
