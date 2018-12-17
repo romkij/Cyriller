@@ -17,11 +17,11 @@ namespace Cyriller.Checker
             InitializeComponent();
         }
 
-        protected void OpenForm(Control Form)
+        protected void OpenForm(Control form)
         {
-            Form.Dock = DockStyle.Fill;
+            form.Dock = DockStyle.Fill;
             pnlContainer.Controls.Clear();
-            pnlContainer.Controls.Add(Form);
+            pnlContainer.Controls.Add(form);
         }
 
         private void msiNumber_Click(object sender, EventArgs e)

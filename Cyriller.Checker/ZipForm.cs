@@ -19,7 +19,7 @@ namespace Cyriller.Checker
             InitializeComponent();
         }
 
-        private void ZipFile(string FolderPath, string DictionaryName)
+        private void ZipFile(string folderPath, string dictionaryName)
         {
             if (txtFolder.Text.IsNullOrEmpty())
             {
@@ -27,7 +27,7 @@ namespace Cyriller.Checker
                 return;
             }
 
-            DirectoryInfo di = new DirectoryInfo(FolderPath);
+            DirectoryInfo di = new DirectoryInfo(folderPath);
 
             if (!di.Exists)
             {
@@ -35,14 +35,14 @@ namespace Cyriller.Checker
                 return;
             }
 
-            FileInfo fi = new FileInfo(Path.Combine(di.FullName, DictionaryName + ".gz"));
+            FileInfo fi = new FileInfo(Path.Combine(di.FullName, dictionaryName + ".gz"));
 
             if (fi.Exists)
             {
                 fi.Delete();
             }
 
-            FileInfo textFi = new FileInfo(Path.Combine(di.FullName, DictionaryName + ".txt"));
+            FileInfo textFi = new FileInfo(Path.Combine(di.FullName, dictionaryName + ".txt"));
 
             if (!textFi.Exists)
             {
