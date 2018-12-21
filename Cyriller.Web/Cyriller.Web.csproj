@@ -23,6 +23,7 @@
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
     <RestorePackages>true</RestorePackages>
     <UseGlobalApplicationHostFile />
+    <Use64BitIISExpress />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -180,6 +181,10 @@
     <Content Include="fonts\FontAwesome.otf" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Cyriller.Model\Cyriller.Model.csproj">
+      <Project>{f345518f-1d1f-441f-a429-b6d028d609e3}</Project>
+      <Name>Cyriller.Model</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Cyriller\Cyriller.csproj">
       <Project>{18887bca-64cf-4fd0-84f5-3003b3003640}</Project>
       <Name>Cyriller</Name>

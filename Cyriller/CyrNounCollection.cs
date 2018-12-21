@@ -11,44 +11,99 @@ namespace Cyriller
 {
     public class CyrNounCollection
     {
-        protected Dictionary<int, string> rules = new Dictionary<int, string>();
+        private const string NounsResourceName = "nouns.gz";
+
+        protected List<string> rules = new List<string>();
         protected Dictionary<string, List<string>> words = new Dictionary<string, List<string>>();
 
         public CyrNounCollection()
         {
             CyrData data = new CyrData();
-            TextReader treader = data.GetData("noun-rules.gz");
+            TextReader treader;
             string line;
             string[] parts;
 
+            treader = data.GetData(NounsResourceName);
             line = treader.ReadLine();
 
             while (line != null)
             {
-                parts = line.Split(' ');
-                rules.Add(int.Parse(parts[0]), parts[1]);
-                line = treader.ReadLine();
-            }
-
-            treader.Dispose();
-            treader = data.GetData("nouns.gz");
-            line = treader.ReadLine();
-
-            while (line != null)
-            {
-                parts = line.Split(' ');
-
-                if (!words.ContainsKey(parts[0]))
+                // Skipping the comments and the empty lines.
+                if (string.IsNullOrWhiteSpace(line) || line.StartsWith("//") || line.StartsWith("#"))
                 {
-                    words.Add(parts[0], new List<string>());
+                    continue;
                 }
 
-                words[parts[0]].Add(parts[1]);
+                if (Char.IsDigit(line[0]))
+                {
+                    parts = line.Split(' ');
+                    rules.Add(parts[1]);
+                    line = treader.ReadLine();
+                    continue;
+                }
 
+                this.AddWordToTheCollection(line, false);
                 line = treader.ReadLine();
             }
 
             treader.Dispose();
+        }
+
+        /// <summary>
+        /// Adds extra words to the existing collection.
+        /// Throws <see cref="ArgumentNullException"/> if provided words enumerable is null.
+        /// Throws <see cref="ArgumentNullException"/> or <see cref="ArgumentException"/> if at least one property of the provided nouns is invalid.
+        /// See <see cref="AddWord(Model.Json.NounJson)"/>, <see cref="Model.Json.NounJson.Validate"/>.
+        /// </summary>
+        /// <param name="words">Words to add into the collection. Cannot be null.</param>
+        /// <param name="overwrite">
+        /// True: replace all existing declencion rules with the provided.
+        /// False: append another declencion rule to the existing ones.
+        /// </param>
+        public void AddWords(IEnumerable<Model.Json.NounJson> words, bool overwrite)
+        {
+            if (words == null)
+            {
+                throw new ArgumentNullException(nameof(words));
+            }
+
+            foreach (Model.Json.NounJson word in words)
+            {
+                this.AddWord(word, overwrite);
+            }
+        }
+
+        /// <summary>
+        /// Adds extra word to the existing collection.
+        /// Throws <see cref="ArgumentNullException"/> if provided word is null.
+        /// Throws <see cref="ArgumentNullException"/> or <see cref="ArgumentException"/> if at least one property of the provided noun is invalid.
+        /// See <see cref="Model.Json.NounJson.Validate"/>.
+        /// </summary>
+        /// <param name="word">Word to add into the collection. Cannot be null.</param>
+        /// <param name="overwrite">
+        /// True: replace all existing declencion rules with the provided.
+        /// False: append another declencion rule to the existing ones.
+        /// </param>
+        public void AddWord(Model.Json.NounJson word, bool overwrite)
+        {
+            if (word == null)
+            {
+                throw new ArgumentNullException(nameof(word));
+            }
+
+            word.Validate();
+
+            Rule.NounRule rule = new Rule.NounRule(word);
+            int ruleIndex = this.rules.IndexOf(rule.Value);
+
+            if (ruleIndex < 0)
+            {
+                ruleIndex = this.rules.Count;
+                this.rules.Add(rule.Value);
+            }
+
+            string line = word.ToDictionaryString(ruleIndex);
+            this.AddWordToTheCollection(line, overwrite);
         }
 
         public CyrNoun Get(string word)
@@ -151,10 +206,37 @@ namespace Cyriller
             return this.words.Select(x => x.Key);
         }
 
-        protected List<string> GetSimilarDetails(string word, out string collectionWord)
+        /// <summary>
+        /// Adds a word to the <see cref="words"/> dictionary.
+        /// </summary>
+        /// <param name="line">
+        /// Word in the Cyriller dictionary format.
+        /// See /Cyriller/App_Data/nouns.txt.
+        /// </param>
+        /// <param name="overwrite">
+        /// True: replace all existing declencion rules with the provided.
+        /// False: append another declencion rule to the existing ones.
+        /// </param>
+        protected virtual void AddWordToTheCollection(string line, bool overwrite)
+        {
+            string[] parts = line.Split(' ');
+
+            if (!words.ContainsKey(parts[0]))
+            {
+                words.Add(parts[0], new List<string>());
+            }
+            else if (overwrite)
+            {
+                words[parts[0]].Clear();
+            }
+
+            words[parts[0]].Add(parts[1]);
+        }
+
+        protected virtual List<string> GetSimilarDetails(string word, out string collectionWord)
         {
             CyrData data = new CyrData();
-            
+
             collectionWord = data.GetSimilar(word, words.Keys.ToList());
 
             if (collectionWord.IsNullOrEmpty())
@@ -165,7 +247,7 @@ namespace Cyriller
             return this.GetDetails(collectionWord);
         }
 
-        protected List<string> GetDetails(string word)
+        protected virtual List<string> GetDetails(string word)
         {
             if (word.IsNullOrEmpty())
             {
