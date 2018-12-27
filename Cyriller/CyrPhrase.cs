@@ -58,7 +58,17 @@ namespace Cyriller
                 switch (speech)
                 {
                     case SpeechPartsEnum.Adjective:
-                        CyrAdjective adj = this.adjCollection.Get(w, condition);
+                        CyrAdjective adj = null;
+
+                        if (condition == GetConditionsEnum.Strict)
+                        {
+                            adj = this.adjCollection.Get(w, out GendersEnum g, out CasesEnum c, out NumbersEnum n, out AnimatesEnum a);
+                        }
+                        else
+                        {
+                            adj = this.adjCollection.Get(w, out string fw, out GendersEnum g, out CasesEnum c, out NumbersEnum n, out AnimatesEnum a);
+                        }
+
                         words.Add(adj);
                         break;
                     case SpeechPartsEnum.Noun:
@@ -66,7 +76,7 @@ namespace Cyriller
                         words.Add(noun);
                         break;
                     default:
-                        throw new ArgumentException("This speech part is not supported yet. Speech part: " + speech.ToString());
+                        throw new NotImplementedException("This speech part is not supported yet. Speech part: " + speech.ToString());
                 }
             }
 
@@ -107,11 +117,11 @@ namespace Cyriller
                 {
                     if (noun != null)
                     {
-                        results.Add(adj.Decline(noun.Animate));
+                        results.Add(adj.Decline(noun.Gender, noun.Animate));
                     }
                     else
                     {
-                        results.Add(adj.Decline(AnimatesEnum.Animated));
+                        results.Add(adj.Decline(GendersEnum.Masculine, AnimatesEnum.Animated));
                     }
                 }
             }

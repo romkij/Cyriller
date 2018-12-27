@@ -16,6 +16,16 @@ namespace Cyriller
         protected List<string> rules = new List<string>();
         protected Dictionary<string, List<string>> words = new Dictionary<string, List<string>>();
 
+        /// <summary>
+        /// Минимальное кол-во совпадающих символов с конца слова, при поиске наиболее подходящего варианта.
+        /// </summary>
+        public int NounMinSameLetters { get; set; } = 2;
+
+        /// <summary>
+        /// Максимальное кол-во совпадающих символов с конца слова, при поиске наиболее подходящего варианта.
+        /// </summary>
+        public int NounMaxSameLetters { get; set; } = int.MaxValue;
+
         public CyrNounCollection()
         {
             CyrData data = new CyrData();
@@ -24,10 +34,16 @@ namespace Cyriller
             string[] parts;
 
             treader = data.GetData(NounsResourceName);
-            line = treader.ReadLine();
 
-            while (line != null)
+            for (; ; )
             {
+                line = treader.ReadLine();
+
+                if (line == null)
+                {
+                    break;
+                }
+
                 // Skipping the comments and the empty lines.
                 if (string.IsNullOrWhiteSpace(line) || line.StartsWith("//") || line.StartsWith("#"))
                 {
@@ -38,12 +54,10 @@ namespace Cyriller
                 {
                     parts = line.Split(' ');
                     rules.Add(parts[1]);
-                    line = treader.ReadLine();
                     continue;
                 }
 
                 this.AddWordToTheCollection(line, false);
-                line = treader.ReadLine();
             }
 
             treader.Dispose();
@@ -74,7 +88,7 @@ namespace Cyriller
         }
 
         /// <summary>
-        /// Adds extra word to the existing collection.
+        /// Adds an extra word to the existing collection.
         /// Throws <see cref="ArgumentNullException"/> if provided word is null.
         /// Throws <see cref="ArgumentNullException"/> or <see cref="ArgumentException"/> if at least one property of the provided noun is invalid.
         /// See <see cref="Model.Json.NounJson.Validate"/>.
@@ -237,7 +251,7 @@ namespace Cyriller
         {
             CyrData data = new CyrData();
 
-            collectionWord = data.GetSimilar(word, words.Keys.ToList());
+            collectionWord = data.GetSimilar(word, words.Keys, this.NounMinSameLetters, this.NounMaxSameLetters);
 
             if (collectionWord.IsNullOrEmpty())
             {

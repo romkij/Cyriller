@@ -78,10 +78,15 @@ namespace Cyriller.Web.Controllers
             foreach (string s in w.Split(' ').Where(val => !string.IsNullOrEmpty(val)))
             {
                 CyrAdjective word;
+                string foundWord;
+                GendersEnum foundGender;
+                CasesEnum foundCase;
+                NumbersEnum foundNumber;
+                AnimatesEnum foundAnimate;
 
                 try
                 {
-                    word = collection.Get(s, GetConditionsEnum.Similar);
+                    word = collection.Get(s, out foundWord, out foundGender, out foundCase, out foundNumber, out foundAnimate);
                 }
                 catch (CyrWordNotFoundException)
                 {
@@ -90,8 +95,8 @@ namespace Cyriller.Web.Controllers
                 }
 
                 words.Add(word);
-                singulars.Add(word.Decline(AnimatesEnum.Animated));
-                plurals.Add(word.DeclinePlural(AnimatesEnum.Animated));
+                singulars.Add(word.Decline(foundGender, foundAnimate));
+                plurals.Add(word.DeclinePlural(foundAnimate));
             }
 
             ViewBag.Text = w;

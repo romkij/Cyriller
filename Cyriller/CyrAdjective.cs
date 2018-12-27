@@ -9,89 +9,80 @@ namespace Cyriller
 {
     public class CyrAdjective
     {
-        protected GendersEnum gender;
-        protected AnimatesEnum animate;
-        protected string name;
-        protected string collectionName;
+        /// <summary>
+        /// Прилагательное мужского рода в именительном падеже.
+        /// </summary>
+        public string Name { get; protected set; }
+
         protected CyrRule[] rules;
 
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="name">Прилагательное мужского рода в именительном падеже</param>
-        /// <param name="collectionName">Слово найденное в коллекции</param>
-        /// <param name="gender">Пол для склонения</param>
-        /// <param name="rules">Правила склонения</param>
-        public CyrAdjective(string name, string collectionName, GendersEnum gender, CyrRule[] rules)
+        /// <param name="name">Прилагательное мужского рода в именительном падеже.</param>
+        /// <param name="rules">Правила склонения.</param>
+        public CyrAdjective(string name, CyrRule[] rules)
         {
-            this.name = name;
-            this.collectionName = collectionName;
-            this.gender = gender;
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                throw new ArgumentNullException(nameof(name));
+            }
+
+            if (rules == null)
+            {
+                throw new ArgumentNullException(nameof(rules));
+            }
+
+            if (rules.Length != 24)
+            {
+                throw new ArgumentException(nameof(rules), "Adjective rules collection must have exactly 22 elements.");
+            }
+
+            this.Name = name;
             this.rules = rules;
         }
 
-        public string Name
+        public CyrAdjective(CyrAdjective source)
         {
-            get
+            if (source == null)
             {
-                return this.name;
+                throw new ArgumentNullException(nameof(source));
             }
+
+            this.Name = source.Name;
+            this.rules = source.rules;
         }
 
-        public string CollectionName
-        {
-            get
-            {
-                return this.collectionName;
-            }
-        }
-
-        public bool ExactMatch
-        {
-            get
-            {
-                return this.name == this.collectionName;
-            }
-        }
-
-        public GendersEnum Gender
-        {
-            get
-            {
-                return this.gender;
-            }
-        }
-
-        public CyrResult Decline(AnimatesEnum animate)
+        public CyrResult Decline(GendersEnum gender, AnimatesEnum animate)
         {
             CyrResult result;
 
-            if (this.gender == GendersEnum.Feminine)
+            if (gender == GendersEnum.Feminine)
             {
-                result = new CyrResult(this.rules[5].Apply(this.name),
-                    this.rules[6].Apply(this.name),
-                    this.rules[7].Apply(this.name),
-                    this.rules[8].Apply(this.name),
-                    this.rules[9].Apply(this.name),
-                    this.rules[10].Apply(this.name));
+                result = new CyrResult(this.rules[5].Apply(this.Name),
+                    this.rules[6].Apply(this.Name),
+                    this.rules[7].Apply(this.Name),
+                    this.rules[8].Apply(this.Name),
+                    this.rules[9].Apply(this.Name),
+                    this.rules[10].Apply(this.Name));
             }
-            else if (this.gender == GendersEnum.Neuter)
+            else if (gender == GendersEnum.Neuter)
             {
-                result = new CyrResult(this.rules[11].Apply(this.name),
-                    this.rules[12].Apply(this.name),
-                    this.rules[13].Apply(this.name),
-                    this.rules[14].Apply(this.name),
-                    this.rules[15].Apply(this.name),
-                    this.rules[16].Apply(this.name));
+                result = new CyrResult(this.rules[11].Apply(this.Name),
+                    this.rules[12].Apply(this.Name),
+                    this.rules[13].Apply(this.Name),
+                    this.rules[14].Apply(this.Name),
+                    this.rules[15].Apply(this.Name),
+                    this.rules[16].Apply(this.Name));
             }
             else
             {
-                result = new CyrResult(this.name,
-                    this.rules[0].Apply(this.name),
-                    this.rules[1].Apply(this.name),
-                    animate == AnimatesEnum.Animated ? this.rules[2].Apply(this.name) : this.name,
-                    this.rules[3].Apply(this.name),
-                    this.rules[4].Apply(this.name));
+                result = new CyrResult(this.Name,
+                    this.rules[0].Apply(this.Name),
+                    this.rules[1].Apply(this.Name),
+                    animate == AnimatesEnum.Animated ? this.rules[2].Apply(this.Name) : this.Name,
+                    this.rules[3].Apply(this.Name),
+                    this.rules[4].Apply(this.Name));
             }
 
             return result;
@@ -99,14 +90,82 @@ namespace Cyriller
 
         public CyrResult DeclinePlural(AnimatesEnum animate)
         {
-            CyrResult result = new CyrResult(this.rules[17].Apply(this.name),
-                this.rules[18].Apply(this.name),
-                this.rules[19].Apply(this.name),
-                animate == AnimatesEnum.Animated ? this.rules[21].Apply(this.name) : this.rules[17].Apply(this.name),
-                this.rules[20].Apply(this.name),
-                this.rules[21].Apply(this.name));
+            CyrResult result = new CyrResult(this.rules[17].Apply(this.Name),
+                this.rules[18].Apply(this.Name),
+                this.rules[19].Apply(this.Name),
+                animate == AnimatesEnum.Animated ? this.rules[21].Apply(this.Name) : this.rules[17].Apply(this.Name),
+                this.rules[20].Apply(this.Name),
+                this.rules[21].Apply(this.Name));
 
             return result;
+        }
+
+        public void SetName(string name, GendersEnum gender, CasesEnum @case, NumbersEnum number, AnimatesEnum animate)
+        {
+            CyrRule[] rules = this.GetRules(gender, number, animate);
+            CyrRule rule = rules[(int)@case - 1];
+
+            this.Name = rule.Revert(this.Name, name);
+        }
+
+        protected virtual CyrRule[] GetRules(GendersEnum gender, NumbersEnum number, AnimatesEnum animate)
+        {
+            CyrRule[] rules;
+
+            if (gender == GendersEnum.Feminine)
+            {
+                rules = new CyrRule[]
+                {
+                    this.rules[5],
+                    this.rules[6],
+                    this.rules[7],
+                    this.rules[8],
+                    this.rules[9],
+                    this.rules[10]
+                };
+            }
+            else if (gender == GendersEnum.Neuter)
+            {
+                rules = new CyrRule[]
+                {
+                    this.rules[11],
+                    this.rules[12],
+                    this.rules[13],
+                    this.rules[14],
+                    this.rules[15],
+                    this.rules[16]
+                };
+            }
+            else if (gender == GendersEnum.Masculine)
+            {
+                rules = new CyrRule[]
+                {
+                    new CyrRule(string.Empty),
+                    this.rules[0],
+                    this.rules[1],
+                    animate == AnimatesEnum.Animated ? this.rules[2] : new CyrRule(string.Empty),
+                    this.rules[3],
+                    this.rules[4]
+                };
+            }
+            else if (number == NumbersEnum.Plural)
+            {
+                rules = new CyrRule[]
+                {
+                    this.rules[17],
+                    this.rules[18],
+                    this.rules[19],
+                    animate == AnimatesEnum.Animated ? this.rules[21] : this.rules[17],
+                    this.rules[20],
+                    this.rules[21]
+                };
+            }
+            else
+            {
+                throw new NotImplementedException();
+            }
+
+            return rules;
         }
     }
 }
