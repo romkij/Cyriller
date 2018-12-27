@@ -42,6 +42,7 @@ namespace Cyriller.Checker
             if (txtWord.Text.IsNullOrEmpty())
             {
                 MessageBox.Show("Необходимо ввести слово!");
+                return;
             }
 
             CyrNoun noun;
