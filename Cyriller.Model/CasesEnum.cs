@@ -3,32 +3,32 @@
     public enum CasesEnum
     {
         /// <summary>
-        /// Именительный
+        /// Именительный, Кто? Что? (есть)
         /// </summary>
         Nominative = 1,
 
         /// <summary>
-        /// Родительный
+        /// Родительный, Кого? Чего? (нет)
         /// </summary>
         Genitive = 2,
 
         /// <summary>
-        /// Дательный
+        /// Дательный, Кому? Чему? (дам)
         /// </summary>
         Dative = 3,
 
         /// <summary>
-        /// Винительный
+        /// Винительный, Кого? Что? (вижу)
         /// </summary>
         Accusative = 4,
 
         /// <summary>
-        /// Творительный
+        /// Творительный, Кем? Чем? (горжусь)
         /// </summary>
         Instrumental = 5,
 
         /// <summary>
-        /// Предложный
+        /// Предложный, О ком? О чем? (думаю)
         /// </summary>
         Prepositional = 6
     }
