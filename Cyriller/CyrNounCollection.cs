@@ -9,7 +9,7 @@ using Cyriller.Model;
 
 namespace Cyriller
 {
-    public class CyrNounCollection
+    public class CyrNounCollection : CyrBaseCollection
     {
         private const string NounsResourceName = "nouns.gz";
 
@@ -45,7 +45,7 @@ namespace Cyriller
                 }
 
                 // Skipping the comments and the empty lines.
-                if (string.IsNullOrWhiteSpace(line) || line.StartsWith("//") || line.StartsWith("#"))
+                if (this.IsSkipLine(line))
                 {
                     continue;
                 }
