@@ -12,7 +12,6 @@ namespace Cyriller
     public partial class CyrAdjectiveCollection : CyrBaseCollection
     {
         public const string AdjectivesResourceName = "adjectives.gz";
-        public const string EndOfTheRulesBlock = "// -- End of the Rules block -- //";
 
         /// <summary>
         /// Список правил склонения.
@@ -306,19 +305,27 @@ namespace Cyriller
             ConcurrentBag<string>[] neuterWordCandidates = new ConcurrentBag<string>[] { new ConcurrentBag<string>(), new ConcurrentBag<string>(), new ConcurrentBag<string>(), new ConcurrentBag<string>(), new ConcurrentBag<string>(), new ConcurrentBag<string>() };
 
             TextReader treader = this.cyrData.GetData(AdjectivesResourceName);
-            string line = treader.ReadLine();
+            string line;
 
-            while (line != null)
+            for (; ; )
             {
-                if (rulesBlock && line == EndOfTheRulesBlock)
+                line = treader.ReadLine();
+
+                if (line == null)
+                {
+                    break;
+                }
+                else if (rulesBlock && line == EndOfTheRulesBlock)
                 {
                     rulesBlock = false;
+                    continue;
                 }
                 else if (this.IsSkipLine(line))
                 {
-                    // Skipping comments and empty lines.
+                    continue;
                 }
-                else if (rulesBlock)
+
+                if (rulesBlock)
                 {
                     string[] parts = line.Split(',');
                     CyrRule[] rule = new CyrRule[parts.Length];
@@ -334,8 +341,6 @@ namespace Cyriller
                 {
                     tasks.Add(this.AddWordToDictionary(line, adjectives, masculineWordCandidates, feminineWordCandidates, neuterWordCandidates, pluralWordCandidates));
                 }
-
-                line = treader.ReadLine();
             }
 
             treader.Dispose();

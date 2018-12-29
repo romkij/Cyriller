@@ -31,7 +31,7 @@ namespace Cyriller
             CyrData data = new CyrData();
             TextReader treader;
             string line;
-            string[] parts;
+            bool rulesBlock = true;
 
             treader = data.GetData(NounsResourceName);
 
@@ -43,21 +43,24 @@ namespace Cyriller
                 {
                     break;
                 }
-
-                // Skipping the comments and the empty lines.
-                if (this.IsSkipLine(line))
+                else if (rulesBlock && line == EndOfTheRulesBlock)
+                {
+                    rulesBlock = false;
+                    continue;
+                }
+                else if (this.IsSkipLine(line))
                 {
                     continue;
                 }
 
-                if (Char.IsDigit(line[0]))
+                if (rulesBlock)
                 {
-                    parts = line.Split(' ');
-                    rules.Add(parts[1]);
-                    continue;
+                    rules.Add(line);
                 }
-
-                this.AddWordToTheCollection(line, false);
+                else
+                {
+                    this.AddWordToTheCollection(line, false);
+                }
             }
 
             treader.Dispose();

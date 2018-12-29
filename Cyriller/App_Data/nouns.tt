@@ -19,6 +19,7 @@
 	string json = File.ReadAllText(path);
 	NounJson[] nouns = JsonConvert.DeserializeObject<NounJson[]>(json);
 	List<string> rules = new List<string>();
+	List<string> lines = new List<string>();
 	
 	this.Write("// " + DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss"));
 	this.Write(Environment.NewLine);
@@ -32,11 +33,6 @@
 
 	foreach (NounJson noun in nouns)
 	{
-		if (rules.Count > 0)
-		{
-			this.Write(Environment.NewLine);
-		}
-
 		NounRule rule = new NounRule(noun);
 
 		int ruleIndex = rules.IndexOf(rule.Value);
@@ -47,14 +43,21 @@
 			rules.Add(rule.Value);
 		}
 
-		this.Write(noun.ToDictionaryString(ruleIndex));
+		lines.Add(noun.ToDictionaryString(ruleIndex));
 	}
+
+	this.WriteLine("// -- Start of the Rules block -- //");
 
 	for (int i = 0; i < rules.Count; i++)
 	{
-		this.Write(Environment.NewLine);
-		this.Write(i.ToString());
-		this.Write(" ");
-		this.Write(rules[i]);
+		this.WriteLine(rules[i]);
+	}
+	
+	this.WriteLine("// -- End of the Rules block -- //");
+	this.WriteLine(string.Empty);
+
+	foreach (string line in lines)
+	{
+		this.WriteLine(line);
 	}
 #>
