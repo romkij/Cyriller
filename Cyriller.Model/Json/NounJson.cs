@@ -14,12 +14,12 @@ namespace Cyriller.Model.Json
         public string[] Plural { get; set; }
 
         /// <summary>
-        /// Converts current noun into a string using the Cyriller dictionary format.
-        /// See /Cyriller/App_Data/nouns.txt.
-        /// Example: абажур 1,2,0,8.
-        /// Explanation: [Name] [Gender],[Animate],[WordType],[DeclencionRuleIndex].
+        /// Превращает текущее существительное в строку, используя формат Cyriller словаря.
+        /// Словарь: /Cyriller/App_Data/nouns.txt.
+        /// Пример: абажур 1,2,0,8.
+        /// Пояснение формата: [существительное] [род],[одушевленность],[тип слова],[индекс правила склонения].
         /// </summary>
-        /// <param name="ruleIndex">Declencion rule index used to decline this noun.</param>
+        /// <param name="ruleIndex">Индекс правила склонения.</param>
         /// <returns></returns>
         public string ToDictionaryString(int ruleIndex)
         {
@@ -39,36 +39,36 @@ namespace Cyriller.Model.Json
         }
 
         /// <summary>
-        /// Validates current state of the object.
-        /// Throws <see cref="ArgumentNullException"/> if <see cref="Name"/> is null or empty.
-        /// Throws <see cref="ArgumentNullException"/> if <see cref="Singular"/> or <see cref="Plural"/> arrays are null.
-        /// Throws <see cref="ArgumentException"/> if <see cref="Singular"/> or <see cref="Plural"/> arrays do not have exactly six elements.
+        /// Проверяет текущее состояние объекта.
+        /// Выбрасывает <see cref="ArgumentNullException"/>, если <see cref="Name"/> равно null или пусто.
+        /// Выбрасывает <see cref="ArgumentNullException"/>, если <see cref="Singular"/> или <see cref="Plural"/> массив равен null.
+        /// Выбрасывает <see cref="ArgumentException"/>, если кол-во элементов в <see cref="Singular"/> или <see cref="Plural"/> массивах не равно шесть.
         /// </summary>
         public void Validate()
         {
-            if (this.Singular == null)
-            {
-                throw new ArgumentNullException(nameof(NounJson.Singular), $"Noun is missing required {nameof(NounJson.Singular)} value.");
-            }
-
-            if (this.Plural == null)
-            {
-                throw new ArgumentNullException(nameof(NounJson.Plural), $"Noun is missing required {nameof(NounJson.Plural)} value.");
-            }
-
             if (string.IsNullOrEmpty(this.Name))
             {
                 throw new ArgumentNullException(nameof(NounJson.Name), $"Noun is missing required {nameof(NounJson.Name)} value.");
             }
 
+            if (this.Singular == null)
+            {
+                throw new ArgumentNullException(nameof(NounJson.Singular), $"Noun {this.Name} is missing required {nameof(NounJson.Singular)} value.");
+            }
+
+            if (this.Plural == null)
+            {
+                throw new ArgumentNullException(nameof(NounJson.Plural), $"Noun {this.Name} is missing required {nameof(NounJson.Plural)} value.");
+            }
+
             if (this.Singular.Length != 6)
             {
-                throw new ArgumentException(nameof(NounJson.Singular), $"Noun {nameof(NounJson.Singular)} has invalid number of values. There should be 6 values.");
+                throw new ArgumentException(nameof(NounJson.Singular), $"Noun {this.Name} {nameof(NounJson.Singular)} has invalid number of values. There should be 6 values.");
             }
 
             if (this.Plural.Length != 6)
             {
-                throw new ArgumentException(nameof(NounJson.Plural), $"Noun {nameof(NounJson.Plural)} has invalid number of values. There should be 6 values.");
+                throw new ArgumentException(nameof(NounJson.Plural), $"Noun {this.Name} {nameof(NounJson.Plural)} has invalid number of values. There should be 6 values.");
             }
         }
     }
