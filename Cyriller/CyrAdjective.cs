@@ -19,7 +19,7 @@ namespace Cyriller
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="name">Прилагательное мужского рода в именительном падеже.</param>
+        /// <param name="name">Прилагательное мужского рода, единственного числа, в именительном падеже.</param>
         /// <param name="rules">Правила склонения.</param>
         public CyrAdjective(string name, CyrRule[] rules)
         {
@@ -33,9 +33,9 @@ namespace Cyriller
                 throw new ArgumentNullException(nameof(rules));
             }
 
-            if (rules.Length != 24)
+            if (rules.Length != 23)
             {
-                throw new ArgumentException(nameof(rules), "Adjective rules collection must have exactly 22 elements.");
+                throw new ArgumentException(nameof(rules), "Adjective rules collection must have exactly 23 elements.");
             }
 
             this.Name = name;
@@ -55,47 +55,16 @@ namespace Cyriller
 
         public CyrResult Decline(GendersEnum gender, AnimatesEnum animate)
         {
-            CyrResult result;
-
-            if (gender == GendersEnum.Feminine)
-            {
-                result = new CyrResult(this.rules[5].Apply(this.Name),
-                    this.rules[6].Apply(this.Name),
-                    this.rules[7].Apply(this.Name),
-                    this.rules[8].Apply(this.Name),
-                    this.rules[9].Apply(this.Name),
-                    this.rules[10].Apply(this.Name));
-            }
-            else if (gender == GendersEnum.Neuter)
-            {
-                result = new CyrResult(this.rules[11].Apply(this.Name),
-                    this.rules[12].Apply(this.Name),
-                    this.rules[13].Apply(this.Name),
-                    this.rules[14].Apply(this.Name),
-                    this.rules[15].Apply(this.Name),
-                    this.rules[16].Apply(this.Name));
-            }
-            else
-            {
-                result = new CyrResult(this.Name,
-                    this.rules[0].Apply(this.Name),
-                    this.rules[1].Apply(this.Name),
-                    animate == AnimatesEnum.Animated ? this.rules[2].Apply(this.Name) : this.Name,
-                    this.rules[3].Apply(this.Name),
-                    this.rules[4].Apply(this.Name));
-            }
+            CyrRule[] rules = this.GetRules(gender, NumbersEnum.Singular, animate);
+            CyrResult result = this.GetResult(rules);
 
             return result;
         }
 
         public CyrResult DeclinePlural(AnimatesEnum animate)
         {
-            CyrResult result = new CyrResult(this.rules[17].Apply(this.Name),
-                this.rules[18].Apply(this.Name),
-                this.rules[19].Apply(this.Name),
-                animate == AnimatesEnum.Animated ? this.rules[21].Apply(this.Name) : this.rules[17].Apply(this.Name),
-                this.rules[20].Apply(this.Name),
-                this.rules[21].Apply(this.Name));
+            CyrRule[] rules = this.GetRules(0, NumbersEnum.Plural, animate);
+            CyrResult result = this.GetResult(rules);
 
             return result;
         }
@@ -108,11 +77,39 @@ namespace Cyriller
             this.Name = rule.Revert(this.Name, name);
         }
 
+        protected virtual CyrResult GetResult(CyrRule[] rules)
+        {
+            CyrResult result = new CyrResult
+            (
+                rules[0].Apply(this.Name),
+                rules[1].Apply(this.Name),
+                rules[2].Apply(this.Name),
+                rules[3].Apply(this.Name),
+                rules[4].Apply(this.Name),
+                rules[5].Apply(this.Name)
+            );
+
+            return result;
+        }
+
         protected virtual CyrRule[] GetRules(GendersEnum gender, NumbersEnum number, AnimatesEnum animate)
         {
             CyrRule[] rules;
 
-            if (gender == GendersEnum.Feminine)
+            
+            if (gender == GendersEnum.Masculine)
+            {
+                rules = new CyrRule[]
+                {
+                    new CyrRule(string.Empty),
+                    this.rules[0],
+                    this.rules[1],
+                    animate == AnimatesEnum.Animated ? this.rules[2] : new CyrRule(string.Empty),
+                    this.rules[3],
+                    this.rules[4]
+                };
+            }
+            else if (gender == GendersEnum.Feminine)
             {
                 rules = new CyrRule[]
                 {
@@ -136,18 +133,6 @@ namespace Cyriller
                     this.rules[16]
                 };
             }
-            else if (gender == GendersEnum.Masculine)
-            {
-                rules = new CyrRule[]
-                {
-                    new CyrRule(string.Empty),
-                    this.rules[0],
-                    this.rules[1],
-                    animate == AnimatesEnum.Animated ? this.rules[2] : new CyrRule(string.Empty),
-                    this.rules[3],
-                    this.rules[4]
-                };
-            }
             else if (number == NumbersEnum.Plural)
             {
                 rules = new CyrRule[]
@@ -155,14 +140,14 @@ namespace Cyriller
                     this.rules[17],
                     this.rules[18],
                     this.rules[19],
-                    animate == AnimatesEnum.Animated ? this.rules[21] : this.rules[17],
-                    this.rules[20],
-                    this.rules[21]
+                    animate == AnimatesEnum.Animated ? this.rules[20] : this.rules[17],
+                    this.rules[21],
+                    this.rules[22]
                 };
             }
             else
             {
-                throw new NotImplementedException();
+                throw new InvalidOperationException($"Unable to decline adjective with Gender: [{gender}], Number: [{number}], Animate: [{animate}].");
             }
 
             return rules;

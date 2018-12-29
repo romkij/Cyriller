@@ -16,13 +16,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="App_Data\adjective-rules.gz" />
     <None Remove="App_Data\adjectives.gz" />
     <None Remove="App_Data\nouns.gz" />
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="App_Data\adjective-rules.gz" />
     <EmbeddedResource Include="App_Data\adjectives.gz" />
     <EmbeddedResource Include="App_Data\nouns.gz" />
   </ItemGroup>
@@ -41,6 +39,15 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="App_Data\adjectives.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>adjectives.txt</LastGenOutput>
+    </None>
+    <None Update="App_Data\adjectives.txt">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>adjectives.tt</DependentUpon>
+    </None>
     <None Update="App_Data\nouns.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>nouns.txt</LastGenOutput>
@@ -57,7 +64,7 @@
   </ItemGroup>
 
   <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
-    <Exec Command="dotnet run --no-build --no-restore --project $(ProjectDir)..\Cyriller.Zipper\Cyriller.Zipper.csproj $(ProjectDir)App_Data\nouns.txt $(ProjectDir)App_Data\nouns.gz OnlyIfSourceIsNewer" />
+    <Exec Command="dotnet run --no-build --no-restore --project $(ProjectDir)..\Cyriller.Zipper\Cyriller.Zipper.csproj $(ProjectDir)App_Data\nouns.txt $(ProjectDir)App_Data\nouns.gz OnlyIfSourceIsNewer&#xD;&#xA;dotnet run --no-build --no-restore --project $(ProjectDir)..\Cyriller.Zipper\Cyriller.Zipper.csproj $(ProjectDir)App_Data\adjectives.txt $(ProjectDir)App_Data\adjectives.gz OnlyIfSourceIsNewer" />
   </Target>
 
 </Project>

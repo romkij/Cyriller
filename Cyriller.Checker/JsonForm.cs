@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO;
 using Newtonsoft.Json;
+using Cyriller.Model;
 using Cyriller.Checker.Model;
 
 namespace Cyriller.Checker
@@ -50,6 +51,8 @@ namespace Cyriller.Checker
 
         private void btnNouns_Click(object sender, EventArgs e)
         {
+            this.Cursor = Cursors.WaitCursor;
+
             CyrNounCollection collection = new CyrNounCollection();
             ConcurrentBag<Dictionary<string, object>> words = new ConcurrentBag<Dictionary<string, object>>();
             string filePath = Path.Combine(txtFolder.Text, "nouns.json");
@@ -66,8 +69,8 @@ namespace Cyriller.Checker
                 result.Add(nameof(CyrNoun.Name), noun.Name);
                 result.Add(nameof(CyrNoun.WordType), noun.WordType.ToString());
 
-                result.Add("Singular", singular.ToArray());
-                result.Add("Plural", plural.ToArray());
+                result.Add(nameof(NumbersEnum.Singular), singular.ToArray());
+                result.Add(nameof(NumbersEnum.Plural), plural.ToArray());
 
                 words.Add(result);
             });
@@ -75,37 +78,34 @@ namespace Cyriller.Checker
             string json = JsonConvert.SerializeObject(words.OrderBy(x => x[nameof(CyrNoun.Name)]), Formatting.Indented);
 
             this.WriteToFile(json, filePath);
+            this.Cursor = Cursors.Default;
         }
 
         private void btnAdjectives_Click(object sender, EventArgs e)
         {
+            this.Cursor = Cursors.WaitCursor;
+
             CyrAdjectiveCollection collection = new CyrAdjectiveCollection();
             ConcurrentBag<Dictionary<string, object>> words = new ConcurrentBag<Dictionary<string, object>>();
             string filePath = Path.Combine(txtFolder.Text, "adjectives.json");
+            GendersEnum[] genders = new GendersEnum[] { GendersEnum.Neuter, GendersEnum.Masculine, GendersEnum.Feminine };
 
-            collection.SelectNeuterWords().AsParallel().ForAll(x =>
+            collection.SelectAdjectives().AsParallel().ForAll(adj =>
             {
-                CyrAdjective adjective = collection.Get(x, Cyriller.Model.GendersEnum.Neuter);
-                CyrResult animatedSingular = adjective.Decline(Cyriller.Model.AnimatesEnum.Animated);
-                CyrResult animatedPlural = adjective.DeclinePlural(Cyriller.Model.AnimatesEnum.Animated);
-                CyrResult inanimatedSingular = adjective.Decline(Cyriller.Model.AnimatesEnum.Inanimated);
-                CyrResult inanimatedPlural = adjective.DeclinePlural(Cyriller.Model.AnimatesEnum.Inanimated);
                 Dictionary<string, object> result = new Dictionary<string, object>();
 
-                result.Add(nameof(CyrAdjective.Gender), adjective.Gender.ToString());
-                result.Add(nameof(CyrAdjective.Name), adjective.Name);
+                result.Add(nameof(CyrAdjective.Name), adj.Name);
 
-                result.Add(nameof(Cyriller.Model.AnimatesEnum.Animated), new
                 {
-                    Singular = animatedSingular.ToArray(),
-                    Plural = animatedPlural.ToArray()
-                });
+                    CyrResult animated = adj.DeclinePlural(AnimatesEnum.Animated);
+                    result[nameof(NumbersEnum.Plural)] = animated.ToArray();
+                }
 
-                result.Add(nameof(Cyriller.Model.AnimatesEnum.Inanimated), new
+                foreach (GendersEnum gender in genders)
                 {
-                    Singular = inanimatedSingular.ToArray(),
-                    Plural = inanimatedPlural.ToArray()
-                });
+                    CyrResult animated = adj.Decline(gender, AnimatesEnum.Animated);
+                    result[gender.ToString()] = animated.ToArray();
+                }
 
                 words.Add(result);
             });
@@ -113,6 +113,7 @@ namespace Cyriller.Checker
             string json = JsonConvert.SerializeObject(words.OrderBy(x => x[nameof(CyrAdjective.Name)]), Formatting.Indented);
 
             this.WriteToFile(json, filePath);
+            this.Cursor = Cursors.Default;
         }
     }
 }

@@ -9,15 +9,15 @@ using Cyriller.Model;
 
 namespace Cyriller
 {
-    public partial class CyrAdjectiveCollection
+    public partial class CyrAdjectiveCollection : CyrBaseCollection
     {
         public const string AdjectivesResourceName = "adjectives.gz";
-        public const string AdjectiveRulesResourceName = "adjective-rules.gz";
+        public const string EndOfTheRulesBlock = "// -- End of the Rules block -- //";
 
         /// <summary>
-        /// Словарь правил склонения.
+        /// Список правил склонения.
         /// </summary>
-        protected Dictionary<int, CyrRule[]> rules = new Dictionary<int, CyrRule[]>();
+        protected List<CyrRule[]> rules = new List<CyrRule[]>();
 
         /// <summary>
         /// Словарь всех доступных прилагательных.
@@ -47,8 +47,7 @@ namespace Cyriller
 
         public CyrAdjectiveCollection()
         {
-            this.FillRules();
-            this.FillWords();
+            this.FillDictionaries();
         }
 
         #region Public methods
@@ -291,36 +290,13 @@ namespace Cyriller
 
         #region Fill dictionaries
         /// <summary>
-        /// Заполняет словарь правил (<see cref="rules"/>) склонения.
-        /// </summary>
-        protected virtual void FillRules()
-        {
-            TextReader treader = this.cyrData.GetData(AdjectiveRulesResourceName);
-            string line = treader.ReadLine();
-
-            while (line != null)
-            {
-                string[] parts = line.Split(' ');
-                string[] ruleParts = parts[1].Split(',');
-                CyrRule[] rule = new CyrRule[ruleParts.Length];
-
-                for (int i = 0; i < ruleParts.Length; i++)
-                {
-                    rule[i] = new CyrRule(ruleParts[i]);
-                }
-
-                this.rules.Add(int.Parse(parts[0]), rule);
-                line = treader.ReadLine();
-            }
-
-            treader.Dispose();
-        }
-
-        /// <summary>
+        /// Заполняет список правил (<see cref="rules"/>) склонения.
         /// Заполняет словарь слов (<see cref="words"/>) и коллекцию (<see cref="wordCandidates"/>) для поиска ближайших совпадений.
         /// </summary>
-        protected virtual void FillWords()
+        protected virtual void FillDictionaries()
         {
+            bool rulesBlock = true;
+
             List<Task> tasks = new List<Task>();
             ConcurrentBag<KeyValuePair<DictionaryKey, CyrAdjective>> adjectives = new ConcurrentBag<KeyValuePair<DictionaryKey, CyrAdjective>>();
 
@@ -334,7 +310,31 @@ namespace Cyriller
 
             while (line != null)
             {
-                tasks.Add(this.AddWordToDictionary(line, adjectives, masculineWordCandidates, feminineWordCandidates, neuterWordCandidates, pluralWordCandidates));
+                if (rulesBlock && line == EndOfTheRulesBlock)
+                {
+                    rulesBlock = false;
+                }
+                else if (this.IsSkipLine(line))
+                {
+                    // Skipping comments and empty lines.
+                }
+                else if (rulesBlock)
+                {
+                    string[] parts = line.Split(',');
+                    CyrRule[] rule = new CyrRule[parts.Length];
+
+                    for (int i = 0; i < parts.Length; i++)
+                    {
+                        rule[i] = new CyrRule(parts[i]);
+                    }
+
+                    this.rules.Add(rule);
+                }
+                else
+                {
+                    tasks.Add(this.AddWordToDictionary(line, adjectives, masculineWordCandidates, feminineWordCandidates, neuterWordCandidates, pluralWordCandidates));
+                }
+
                 line = treader.ReadLine();
             }
 
