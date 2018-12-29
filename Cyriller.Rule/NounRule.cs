@@ -6,11 +6,17 @@ using Cyriller.Model.Json;
 
 namespace Cyriller.Rule
 {
-    public class NounRule
+    public class NounRule : BaseRule
     {
-        public const string Hyphen = "-";
-        public const string Separator = "|";
-        public string Value { get; protected set; }
+        /// <summary>
+        /// Используется для распознавания составных слов, к примеру "Австро-венгрия".
+        /// </summary>
+        public string Hyphen { get; set; } = "-";
+
+        /// <summary>
+        /// Используется для склеивания правил склонения для составных слов.
+        /// </summary>
+        public string WordSeparator { get; set; } = "|";
 
         public NounRule(NounJson source)
         {
@@ -40,10 +46,10 @@ namespace Cyriller.Rule
                 string part = parts[i];
                 string[] variant = variantParts.Select(x => x.Length > i ? x[i] : null).ToArray();
 
-                rules.Add(this.GetNounRule(part, variant));
+                rules.Add(this.GetRuleString(part, variant));
             }
 
-            this.Value = string.Join(Separator, rules.ToArray());
+            this.Value = string.Join(WordSeparator, rules.ToArray());
         }
 
         protected virtual void ValidateSource(NounJson source)
@@ -54,45 +60,6 @@ namespace Cyriller.Rule
             }
 
             source.Validate();
-        }
-
-        protected virtual string GetNounRule(string noun, string[] variants)
-        {
-            List<string> rules = new List<string>();
-
-            foreach (string variant in variants)
-            {
-                if (string.IsNullOrEmpty(variant))
-                {
-                    rules.Add("*");
-                    continue;
-                }
-
-                int index = 0;
-                StringBuilder sb = new StringBuilder();
-
-                for (index = 0; index < noun.Length && index < variant.Length; index++)
-                {
-                    if (noun[index] != variant[index])
-                    {
-                        break;
-                    }
-                }
-
-                string end = variant.Substring(index);
-                int cut = noun.Length - index;
-
-                sb.Append(end);
-
-                if (cut > 0)
-                {
-                    sb.Append(cut);
-                }
-
-                rules.Add(sb.ToString());
-            }
-
-            return string.Join(",", rules.ToArray());
         }
     }
 }
