@@ -12,6 +12,11 @@ namespace Cyriller
         private const string Unavailable = "*";
 
         /// <summary>
+        /// Оригинальная строка, из которой было создано данное правило.
+        /// </summary>
+        protected string originalRuleString;
+
+        /// <summary>
         /// Кол-во символов для удаления с конца слова, при применении данного правила склонения.
         /// </summary>
         protected int cut;
@@ -55,6 +60,7 @@ namespace Cyriller
                 }
             }
 
+            this.originalRuleString = rule;
             this.end = new string(endChars.ToArray());
 
             switch (cutChars.Count)
@@ -112,6 +118,24 @@ namespace Cyriller
             string originalEnd = original.Substring(original.Length - this.cut);
 
             return current.Substring(0, length) + originalEnd;
+        }
+
+        public override bool Equals(object obj)
+        {
+            CyrRule that = obj as CyrRule;
+            bool equals = this.originalRuleString == that?.originalRuleString;
+
+            return equals;
+        }
+
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
+        }
+
+        public override string ToString()
+        {
+            return this.originalRuleString;
         }
     }
 }

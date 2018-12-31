@@ -7,7 +7,7 @@ using Cyriller.Model;
 
 namespace Cyriller
 {
-    public class CyrAdjective
+    public class CyrAdjective : CyrBaseWord
     {
         /// <summary>
         /// Прилагательное мужского рода в именительном падеже.
@@ -15,6 +15,7 @@ namespace Cyriller
         public string Name { get; protected set; }
 
         protected CyrRule[] rules;
+        protected int rulesPerAdjective = 23;
 
         /// <summary>
         /// 
@@ -33,9 +34,9 @@ namespace Cyriller
                 throw new ArgumentNullException(nameof(rules));
             }
 
-            if (rules.Length != 23)
+            if (rules.Length != rulesPerAdjective)
             {
-                throw new ArgumentException(nameof(rules), "Adjective rules collection must have exactly 23 elements.");
+                throw new ArgumentException(nameof(rules), $"Adjective rules collection must have exactly {rulesPerAdjective} elements.");
             }
 
             this.Name = name;
@@ -56,7 +57,7 @@ namespace Cyriller
         public CyrResult Decline(GendersEnum gender, AnimatesEnum animate)
         {
             CyrRule[] rules = this.GetRules(gender, NumbersEnum.Singular, animate);
-            CyrResult result = this.GetResult(rules);
+            CyrResult result = this.GetResult(this.Name, rules);
 
             return result;
         }
@@ -64,7 +65,7 @@ namespace Cyriller
         public CyrResult DeclinePlural(AnimatesEnum animate)
         {
             CyrRule[] rules = this.GetRules(0, NumbersEnum.Plural, animate);
-            CyrResult result = this.GetResult(rules);
+            CyrResult result = this.GetResult(this.Name, rules);
 
             return result;
         }
@@ -75,21 +76,6 @@ namespace Cyriller
             CyrRule rule = rules[(int)@case - 1];
 
             this.Name = rule.Revert(this.Name, name);
-        }
-
-        protected virtual CyrResult GetResult(CyrRule[] rules)
-        {
-            CyrResult result = new CyrResult
-            (
-                rules[0].Apply(this.Name),
-                rules[1].Apply(this.Name),
-                rules[2].Apply(this.Name),
-                rules[3].Apply(this.Name),
-                rules[4].Apply(this.Name),
-                rules[5].Apply(this.Name)
-            );
-
-            return result;
         }
 
         protected virtual CyrRule[] GetRules(GendersEnum gender, NumbersEnum number, AnimatesEnum animate)

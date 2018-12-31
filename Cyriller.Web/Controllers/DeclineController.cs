@@ -36,7 +36,7 @@ namespace Cyriller.Web.Controllers
 
                 try
                 {
-                    word = collection.Get(s, GetConditionsEnum.Similar);
+                    word = collection.Get(s, out string fw, out CasesEnum c, out NumbersEnum n);
                 }
                 catch (CyrWordNotFoundException)
                 {
@@ -171,7 +171,7 @@ namespace Cyriller.Web.Controllers
 
                         try
                         {
-                            noun = this.NounCollection.Get(i, GetConditionsEnum.Similar);
+                            noun = this.NounCollection.Get(i, out string fw, out CasesEnum c, out NumbersEnum n);
                         }
                         catch (CyrWordNotFoundException ex)
                         {

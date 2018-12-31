@@ -87,7 +87,7 @@ namespace Cyriller
                     }
                     else if (i <= minSameLetters)
                     {
-                        continue;
+                        break;
                     }
 
                     if (sameLetters >= maxSameLetters)
@@ -97,13 +97,16 @@ namespace Cyriller
                     }
                 }
 
-                SimilarCandidate c = new SimilarCandidate()
+                if (sameLetters >= minSameLetters)
                 {
-                    Name = str,
-                    Weight = weight
-                };
+                    SimilarCandidate c = new SimilarCandidate()
+                    {
+                        Name = str,
+                        Weight = weight
+                    };
 
-                candidates.Add(c);
+                    candidates.Add(c);
+                }
             }
 
             if (!string.IsNullOrEmpty(foundWord))
@@ -115,12 +118,33 @@ namespace Cyriller
 
             foreach (SimilarCandidate c in candidates)
             {
-                if (candidate == null
-                    || c.Weight > candidate.Weight
-                    || (c.Weight == candidate.Weight && c.Name.Length < candidate.Name.Length)
-                    || (c.Weight == candidate.Weight && c.Name.Length == candidate.Name.Length && c.Name.CompareTo(candidate.Name) < 0))
+                if (candidate == null)
                 {
                     candidate = c;
+                    continue;
+                }
+
+                if (c.Weight > candidate.Weight)
+                {
+                    candidate = c;
+                    continue;
+                }
+
+                bool sameWeight = c.Weight == candidate.Weight;
+                int betterLengthDiff = Math.Abs(word.Length - c.Name.Length) - Math.Abs(word.Length - candidate.Name.Length);
+
+                if (sameWeight && betterLengthDiff < 0)
+                {
+                    candidate = c;
+                    continue;
+                }
+
+                bool sameCase = char.IsUpper(c.Name[0]) == char.IsUpper(word[0]);
+
+                if (sameWeight && betterLengthDiff == 0 && sameCase)
+                {
+                    candidate = c;
+                    continue;
                 }
             }
 

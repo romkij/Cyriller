@@ -57,9 +57,8 @@ namespace Cyriller.Checker
             ConcurrentBag<Dictionary<string, object>> words = new ConcurrentBag<Dictionary<string, object>>();
             string filePath = Path.Combine(txtFolder.Text, "nouns.json");
 
-            collection.SelectWords().AsParallel().ForAll(x =>
+            collection.SelectNouns().AsParallel().ForAll(noun =>
             {
-                CyrNoun noun = collection.Get(x);
                 CyrResult singular = noun.Decline();
                 CyrResult plural = noun.DeclinePlural();
                 Dictionary<string, object> result = new Dictionary<string, object>();

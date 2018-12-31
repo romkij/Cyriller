@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Concurrent;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -9,12 +10,24 @@ using Cyriller.Model;
 
 namespace Cyriller
 {
-    public class CyrNounCollection : CyrBaseCollection
+    public partial class CyrNounCollection : CyrBaseCollection
     {
         private const string NounsResourceName = "nouns.gz";
 
-        protected List<string> rules = new List<string>();
-        protected Dictionary<string, List<string>> words = new Dictionary<string, List<string>>();
+        /// <summary>
+        /// Список правил склонения.
+        /// </summary>
+        protected List<CyrRule[]> rules = new List<CyrRule[]>();
+
+        /// <summary>
+        /// Словарь всех доступных существительных.
+        /// </summary>
+        protected Dictionary<DictionaryKey, CyrNoun> words = new Dictionary<DictionaryKey, CyrNoun>();
+
+        /// <summary>
+        /// Список всех существительных во всех доступных формах, для поиска наиболее подходящего совпадения, если слово отсутствует в словаре.
+        /// </summary>
+        protected List<string> wordCandidates;
 
         /// <summary>
         /// Минимальное кол-во совпадающих символов с конца слова, при поиске наиболее подходящего варианта.
@@ -34,6 +47,9 @@ namespace Cyriller
             bool rulesBlock = true;
 
             treader = data.GetData(NounsResourceName);
+
+            ConcurrentBag<string>[] singularWordCandidates = new ConcurrentBag<string>[] { new ConcurrentBag<string>(), new ConcurrentBag<string>(), new ConcurrentBag<string>(), new ConcurrentBag<string>(), new ConcurrentBag<string>(), new ConcurrentBag<string>() };
+            ConcurrentBag<string>[] pluralWordCandidates = new ConcurrentBag<string>[] { new ConcurrentBag<string>(), new ConcurrentBag<string>(), new ConcurrentBag<string>(), new ConcurrentBag<string>(), new ConcurrentBag<string>(), new ConcurrentBag<string>() };
 
             for (; ; )
             {
@@ -55,172 +71,250 @@ namespace Cyriller
 
                 if (rulesBlock)
                 {
-                    rules.Add(line);
+                    string[] parts = line.Split(',', '|');
+                    CyrRule[] rule = new CyrRule[parts.Length];
+
+                    for (int i = 0; i < parts.Length; i++)
+                    {
+                        rule[i] = new CyrRule(parts[i]);
+                    }
+
+                    this.rules.Add(rule);
                 }
                 else
                 {
-                    this.AddWordToTheCollection(line, false);
+                    this.AddWordToTheCollection(line, singularWordCandidates, pluralWordCandidates);
                 }
             }
 
             treader.Dispose();
-        }
 
-        /// <summary>
-        /// Adds extra words to the existing collection.
-        /// Throws <see cref="ArgumentNullException"/> if provided words enumerable is null.
-        /// Throws <see cref="ArgumentNullException"/> or <see cref="ArgumentException"/> if at least one property of the provided nouns is invalid.
-        /// See <see cref="AddWord(Model.Json.NounJson)"/>, <see cref="Model.Json.NounJson.Validate"/>.
-        /// </summary>
-        /// <param name="words">Words to add into the collection. Cannot be null.</param>
-        /// <param name="overwrite">
-        /// True: replace all existing declencion rules with the provided.
-        /// False: append another declencion rule to the existing ones.
-        /// </param>
-        public void AddWords(IEnumerable<Model.Json.NounJson> words, bool overwrite)
-        {
-            if (words == null)
             {
-                throw new ArgumentNullException(nameof(words));
-            }
+                IEnumerable<string> candidates = new string[0];
 
-            foreach (Model.Json.NounJson word in words)
-            {
-                this.AddWord(word, overwrite);
+                foreach (ConcurrentBag<string> candidate in singularWordCandidates)
+                {
+                    candidates = candidates.Concat(candidate);
+                }
+
+                foreach (ConcurrentBag<string> candidate in pluralWordCandidates)
+                {
+                    candidates = candidates.Concat(candidate);
+                }
+
+                this.wordCandidates = candidates.Distinct().ToList();
             }
         }
 
         /// <summary>
-        /// Adds an extra word to the existing collection.
-        /// Throws <see cref="ArgumentNullException"/> if provided word is null.
-        /// Throws <see cref="ArgumentNullException"/> or <see cref="ArgumentException"/> if at least one property of the provided noun is invalid.
-        /// See <see cref="Model.Json.NounJson.Validate"/>.
+        /// Поиск существительного по точному совпадению с автоматическим определением рода, числа и падежа.
+        /// Выбрасывает <see cref="CyrWordNotFoundException"/> если слово не было найдено.
         /// </summary>
-        /// <param name="word">Word to add into the collection. Cannot be null.</param>
-        /// <param name="overwrite">
-        /// True: replace all existing declencion rules with the provided.
-        /// False: append another declencion rule to the existing ones.
-        /// </param>
-        public void AddWord(Model.Json.NounJson word, bool overwrite)
+        /// <param name="word">Существительное в любом роде, числе и падеже.</param>
+        /// <param name="number">Число найденного существительного.</param>
+        /// <param name="case">Падеж найденного существительного.</param>
+        /// <returns></returns>
+        public CyrNoun Get(string word, out CasesEnum @case, out NumbersEnum number)
         {
-            if (word == null)
+            CyrNoun noun = this.GetOrDefault(word, out @case, out number);
+
+            if (noun == null)
             {
-                throw new ArgumentNullException(nameof(word));
+                throw new CyrWordNotFoundException(word, 0, @case, number, 0);
             }
-
-            word.Validate();
-
-            Rule.NounRule rule = new Rule.NounRule(word);
-            int ruleIndex = this.rules.IndexOf(rule.Value);
-
-            if (ruleIndex < 0)
-            {
-                ruleIndex = this.rules.Count;
-                this.rules.Add(rule.Value);
-            }
-
-            string line = word.ToDictionaryString(ruleIndex);
-            this.AddWordToTheCollection(line, overwrite);
-        }
-
-        public CyrNoun Get(string word)
-        {
-            return this.Get(word, GetConditionsEnum.Strict);
-        }
-
-        public CyrNoun Get(string word, GetConditionsEnum condition, GendersEnum? genderID = null, AnimatesEnum? animateID = null, WordTypesEnum? typeID = null)
-        {
-            string t = word;
-            List<string> list = this.GetDetails(t);
-
-            if (list == null || !list.Any())
-            {
-                t = word.ToLower();
-                list = this.GetDetails(t);
-            }
-
-            if (list == null || !list.Any())
-            {
-                t = word.ToLower().UppercaseFirst();
-                list = this.GetDetails(t);
-            }
-
-            if (list == null || !list.Any())
-            {
-                List<int> indexes = new List<int>();
-                string lower = word.ToLower();
-
-                for (int i = 0; i < lower.Length; i++)
-                {
-                    if (lower[i] == 'е')
-                    {
-                        indexes.Add(i);
-                    }
-                }
-
-                foreach (int index in indexes)
-                {
-                    t = lower.Substring(0, index) + "ё" + lower.Substring(index + 1);
-                    list = this.GetDetails(t);
-
-                    if (list != null && list.Any())
-                    {
-                        break;
-                    }
-                }
-            }
-
-            if ((list == null || !list.Any()) && condition == GetConditionsEnum.Similar)
-            {
-                list = this.GetSimilarDetails(word, out t);
-            }
-
-            if (list == null || !list.Any())
-            {
-                throw new CyrWordNotFoundException(word);
-            }
-
-            IEnumerable<CyrNounCollectionRow> rows = list.Select(x => CyrNounCollectionRow.Parse(x));
-            IEnumerable<CyrNounCollectionRow> filter = rows;
-
-            if (genderID.HasValue)
-            {
-                filter = filter.Where(x => x.GenderID == (int)genderID);
-            }
-
-            if (animateID.HasValue)
-            {
-                filter = filter.Where(x => x.AnimateID == (int)animateID);
-            }
-
-            if (typeID.HasValue)
-            {
-                filter = filter.Where(x => x.TypeID == (int)typeID);
-            }
-
-            CyrNounCollectionRow row = filter.FirstOrDefault();
-
-            if (row == null && condition == GetConditionsEnum.Similar)
-            {
-                row = rows.FirstOrDefault();
-            }
-
-            if (row == null)
-            {
-                throw new CyrWordNotFoundException(word);
-            }
-
-            string[] parts = this.rules[row.RuleID].Split(new char[] { ',', '|' });
-
-            CyrRule[] rules = parts.Select(val => new CyrRule(val)).ToArray();
-            CyrNoun noun = new CyrNoun(word, t, (GendersEnum)row.GenderID, (AnimatesEnum)row.AnimateID, (WordTypesEnum)row.TypeID, rules);
 
             return noun;
         }
 
-        public IEnumerable<string> SelectWords()
+        /// <summary>
+        /// Поиск существительного по неточному совпадению с автоматическим определением рода, числа и падежа.
+        /// Выбрасывает <see cref="CyrWordNotFoundException"/> если слово не было найдено.
+        /// </summary>
+        /// <param name="word">Существительное в любом роде, числе и падеже.</param>
+        /// <param name="foundWord">Существительное, найденное в словаре.</param>
+        /// <param name="number">Число найденного существительного.</param>
+        /// <param name="case">Падеж найденного существительного.</param>
+        /// <returns></returns>
+        public CyrNoun Get(string word, out string foundWord, out CasesEnum @case, out NumbersEnum number)
         {
-            return this.words.Select(x => x.Key);
+            CyrNoun noun = this.GetOrDefault(word, out foundWord, out @case, out number);
+
+            if (noun == null)
+            {
+                throw new CyrWordNotFoundException(word, 0, @case, number, 0);
+            }
+
+            return noun;
+        }
+
+        /// <summary>
+        /// Поиск существительного по точному совпадению с автоматическим определением рода, числа и падежа.
+        /// Возвращает null если слово не было найдено.
+        /// </summary>
+        /// <param name="word">Существительное в любом роде, числе и падеже.</param>
+        /// <param name="number">Число найденного существительного.</param>
+        /// <param name="case">Падеж найденного существительного.</param>
+        /// <returns></returns>
+        public CyrNoun GetOrDefault(string word, out CasesEnum @case, out NumbersEnum number)
+        {
+            DictionaryKey key;
+            CyrNoun noun;
+
+            // Существительные, без формы единственного числа, не имеют рода. К примеру "ворота" или "шахматы".
+            GendersEnum[] gendersWithZero = new GendersEnum[] { GendersEnum.Masculine, GendersEnum.Feminine, GendersEnum.Neuter, 0 };
+
+            foreach (CasesEnum c in this.cases)
+            {
+                foreach (NumbersEnum n in this.numbers)
+                {
+                    foreach (GendersEnum g in gendersWithZero)
+                    {
+                        key = new DictionaryKey(word, g, c, n);
+
+                        if (this.words.TryGetValue(key, out noun))
+                        {
+                            @case = key.Case;
+                            number = key.Number;
+
+                            return noun;
+                        }
+                    }
+                }
+            }
+
+            @case = 0;
+            number = 0;
+
+            return null;
+        }
+
+        /// <summary>
+        /// Поиск существительного по неточному совпадению с автоматическим определением рода, числа и падежа.
+        /// Возвращает null если слово не было найдено.
+        /// </summary>
+        /// <param name="word">Существительное в любом роде, числе и падеже.</param>
+        /// <param name="foundWord">Существительное, найденное в словаре.</param>
+        /// <param name="number">Число найденного существительного.</param>
+        /// <param name="case">Падеж найденного существительного.</param>
+        /// <returns></returns>
+        public CyrNoun GetOrDefault(string word, out string foundWord, out CasesEnum @case, out NumbersEnum number)
+        {
+            CyrNoun noun = this.GetOrDefault(word, out @case, out number);
+
+            if (noun != null)
+            {
+                foundWord = word;
+                return new CyrNoun(noun);
+            }
+
+            foundWord = this.cyrData.GetSimilar(word, this.wordCandidates, this.NounMinSameLetters, this.NounMaxSameLetters);
+
+            if (string.IsNullOrEmpty(foundWord))
+            {
+                return null;
+            }
+
+            noun = this.GetOrDefault(foundWord, out @case, out number);
+
+            if (noun != null)
+            {
+                noun = new CyrNoun(noun);
+                noun.SetName(word, @case, number);
+                return noun;
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// Поиск существительного по точному совпадению.
+        /// Выбрасывает <see cref="CyrWordNotFoundException"/> если слово не было найдено.
+        /// </summary>
+        /// <param name="word">Существительное.</param>
+        /// <param name="gender">Род, в котором указано существительного.</param>
+        /// <param name="case">Падеж, в котором указано существительного.</param>
+        /// <param name="number">Число, в котором указано существительного.</param>
+        /// <returns></returns>
+        public CyrNoun Get(string word, GendersEnum gender, CasesEnum @case, NumbersEnum number)
+        {
+            CyrNoun noun = this.GetOrDefault(word, gender, @case, number);
+
+            if (noun == null)
+            {
+                throw new CyrWordNotFoundException(word, gender, @case, number, 0);
+            }
+
+            return noun;
+        }
+
+        /// <summary>
+        /// Поиск существительного по точному совпадению.
+        /// Возвращает null если слово не было найдено.
+        /// </summary>
+        /// <param name="word">Существительное.</param>
+        /// <param name="gender">Род, в котором указано существительного.</param>
+        /// <param name="case">Падеж, в котором указано существительного.</param>
+        /// <param name="number">Число, в котором указано существительного.</param>
+        /// <returns></returns>
+        public CyrNoun GetOrDefault(string word, GendersEnum gender, CasesEnum @case, NumbersEnum number)
+        {
+            DictionaryKey key = new DictionaryKey(word, gender, @case, number);
+            CyrNoun noun;
+
+            if (this.words.TryGetValue(key, out noun))
+            {
+                return new CyrNoun(noun);
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// Поиск существительного по неточному совпадению.
+        /// Возвращает null если слово не было найдено.
+        /// </summary>
+        /// <param name="word">Существительное.</param>
+        /// <param name="foundWord">Существительное, найденное в словаре.</param>
+        /// <param name="gender">Род, в котором указано существительного.</param>
+        /// <param name="case">Падеж, в котором указано существительного.</param>
+        /// <param name="number">Число, в котором указано существительного.</param>
+        /// <returns></returns>
+        public CyrNoun GetOrDefault(string word, out string foundWord, GendersEnum gender, CasesEnum @case, NumbersEnum number)
+        {
+            CyrNoun noun = this.GetOrDefault(word, gender, @case, number);
+
+            if (noun != null)
+            {
+                foundWord = word;
+                return new CyrNoun(noun);
+            }
+
+            foundWord = this.cyrData.GetSimilar(word, this.wordCandidates, this.NounMinSameLetters, this.NounMaxSameLetters);
+
+            if (string.IsNullOrEmpty(foundWord))
+            {
+                return null;
+            }
+
+            noun = this.GetOrDefault(foundWord, gender, @case, number);
+
+            if (noun != null)
+            {
+                noun = new CyrNoun(noun);
+                noun.SetName(word, @case, number);
+                return noun;
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// Возвращает список всех существительных (<see cref="CyrNoun"/>) из текущего словаря.
+        /// </summary>
+        /// <returns></returns>
+        public IEnumerable<CyrNoun> SelectNouns()
+        {
+            return this.words.Select(x => x.Value).Distinct().Select(x => new CyrNoun(x));
         }
 
         /// <summary>
@@ -230,53 +324,33 @@ namespace Cyriller
         /// Word in the Cyriller dictionary format.
         /// See /Cyriller/App_Data/nouns.txt.
         /// </param>
-        /// <param name="overwrite">
-        /// True: replace all existing declencion rules with the provided.
-        /// False: append another declencion rule to the existing ones.
-        /// </param>
-        protected virtual void AddWordToTheCollection(string line, bool overwrite)
+        protected virtual void AddWordToTheCollection(string line, ConcurrentBag<string>[] singularWordCandidates, ConcurrentBag<string>[] pluralWordCandidates)
         {
             string[] parts = line.Split(' ');
 
-            if (!words.ContainsKey(parts[0]))
+            CyrNounCollectionRow row = CyrNounCollectionRow.Parse(parts[1]);
+            CyrRule[] rules = this.rules[row.RuleID];
+            CyrNoun noun = new CyrNoun(parts[0], (GendersEnum)row.GenderID, (AnimatesEnum)row.AnimateID, (WordTypesEnum)row.TypeID, rules);
+
+            CyrResult singular = noun.Decline();
+            CyrResult plural = noun.DeclinePlural();
+
+            foreach (CasesEnum @case in this.cases)
             {
-                words.Add(parts[0], new List<string>());
+                if (!string.IsNullOrEmpty(singular.Get(@case)))
+                {
+                    DictionaryKey key = new DictionaryKey(singular.Get(@case), noun.Gender, @case, NumbersEnum.Singular);
+                    singularWordCandidates[(int)@case - 1].Add(singular.Get(@case));
+                    this.words[key] = noun;
+                }
+
+                if (!string.IsNullOrEmpty(plural.Get(@case)))
+                {
+                    DictionaryKey key = new DictionaryKey(plural.Get(@case), noun.Gender, @case, NumbersEnum.Plural);
+                    pluralWordCandidates[(int)@case - 1].Add(plural.Get(@case));
+                    this.words[key] = noun;
+                }
             }
-            else if (overwrite)
-            {
-                words[parts[0]].Clear();
-            }
-
-            words[parts[0]].Add(parts[1]);
-        }
-
-        protected virtual List<string> GetSimilarDetails(string word, out string collectionWord)
-        {
-            CyrData data = new CyrData();
-
-            collectionWord = data.GetSimilar(word, words.Keys, this.NounMinSameLetters, this.NounMaxSameLetters);
-
-            if (collectionWord.IsNullOrEmpty())
-            {
-                return null;
-            }
-
-            return this.GetDetails(collectionWord);
-        }
-
-        protected virtual List<string> GetDetails(string word)
-        {
-            if (word.IsNullOrEmpty())
-            {
-                return null;
-            }
-
-            if (words.ContainsKey(word))
-            {
-                return words[word];
-            }
-
-            return null;
         }
     }
 }

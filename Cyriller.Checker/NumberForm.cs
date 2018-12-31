@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Cyriller.Model;
 
 namespace Cyriller.Checker
 {
@@ -54,7 +55,7 @@ namespace Cyriller.Checker
 
                     try
                     {
-                        noun = cyrCollection.Get(txtItem.Text, Cyriller.Model.GetConditionsEnum.Similar);
+                        noun = cyrCollection.Get(txtItem.Text, out string fw, out CasesEnum c, out NumbersEnum n);
                     }
                     catch (CyrWordNotFoundException ex)
                     {

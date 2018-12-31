@@ -71,6 +71,7 @@ namespace Cyriller.Checker
             CasesEnum foundCase;
             NumbersEnum foundNumber;
             AnimatesEnum foundAnimate;
+            CyrResult result = null;
 
             try
             {
@@ -78,6 +79,16 @@ namespace Cyriller.Checker
 
                 watch.Start();
                 adj = cyrCollection.Get(txtWord.Text, out foundWord, out foundGender, out foundCase, out foundNumber, out foundAnimate);
+
+                if (declineToNumber == NumbersEnum.Singular)
+                {
+                    result = adj.Decline(declineToGender, declineToAnimate);
+                }
+                else
+                {
+                    result = adj.DeclinePlural(declineToAnimate);
+                }
+
                 watch.Stop();
                 this.Log($"Склонение слова {txtWord.Text} заняло {watch.Elapsed}.");
             }
@@ -87,15 +98,7 @@ namespace Cyriller.Checker
                 return;
             }
 
-            if (declineToNumber == NumbersEnum.Singular)
-            {
-                this.SetResult(adj.Decline(declineToGender, declineToAnimate));
-            }
-            else
-            {
-                this.SetResult(adj.DeclinePlural(declineToAnimate));
-            }
-
+            this.SetResult(result);
             txtCollectionName.Text = foundWord;
             txtDetails.Text = $"{foundGender}, {foundCase}, {foundNumber}, {foundAnimate}";
 

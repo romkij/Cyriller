@@ -43,7 +43,7 @@ namespace Cyriller.Tests
 
                     foreach (Word word in words)
                     {
-                        CyrNoun noun = nounCollection.Get(word.Name, GetConditionsEnum.Strict, (GendersEnum?)word.GenderID, (AnimatesEnum?)word.AnimateID, (WordTypesEnum?)word.TypeID);
+                        CyrNoun noun = nounCollection.Get(word.Name, (GendersEnum)(word.GenderID ?? 0), CasesEnum.Nominative, NumbersEnum.Singular);
 
                         Assert.NotNull(noun);
                         Assert.Equal(word.GenderID ?? 0, (int?)noun.Gender ?? 0);

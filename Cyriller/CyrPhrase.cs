@@ -54,6 +54,10 @@ namespace Cyriller
             foreach (string w in parts)
             {
                 SpeechPartsEnum speech = this.DetermineSpeechPart(w);
+                string fw;
+                GendersEnum g;
+                CasesEnum c;
+                NumbersEnum n;
 
                 switch (speech)
                 {
@@ -62,17 +66,27 @@ namespace Cyriller
 
                         if (condition == GetConditionsEnum.Strict)
                         {
-                            adj = this.adjCollection.Get(w, out GendersEnum g, out CasesEnum c, out NumbersEnum n, out AnimatesEnum a);
+                            adj = this.adjCollection.Get(w, out g, out c, out n, out AnimatesEnum a);
                         }
                         else
                         {
-                            adj = this.adjCollection.Get(w, out string fw, out GendersEnum g, out CasesEnum c, out NumbersEnum n, out AnimatesEnum a);
+                            adj = this.adjCollection.Get(w, out fw, out g, out c, out n, out AnimatesEnum a);
                         }
 
                         words.Add(adj);
                         break;
                     case SpeechPartsEnum.Noun:
-                        CyrNoun noun = this.nounCollection.Get(w, condition);
+                        CyrNoun noun = null;
+
+                        if (condition == GetConditionsEnum.Strict)
+                        {
+                            noun = this.nounCollection.Get(w, out c, out n);
+                        }
+                        else
+                        {
+                            noun = this.nounCollection.Get(w, out fw, out c, out n);
+                        }
+
                         words.Add(noun);
                         break;
                     default:

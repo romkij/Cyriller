@@ -28,11 +28,7 @@ namespace Cyriller
         /// </summary>
         protected string[] wordCandidates;
 
-        protected GendersEnum[] genders = Enum.GetValues(typeof(GendersEnum)).OfType<GendersEnum>().ToArray();
-        protected CasesEnum[] cases = Enum.GetValues(typeof(CasesEnum)).OfType<CasesEnum>().ToArray();
-        protected NumbersEnum[] numbers = Enum.GetValues(typeof(NumbersEnum)).OfType<NumbersEnum>().ToArray();
         protected AnimatesEnum[] animates = Enum.GetValues(typeof(AnimatesEnum)).OfType<AnimatesEnum>().ToArray();
-        protected CyrData cyrData = new CyrData();
 
         /// <summary>
         /// Минимальное кол-во совпадающих символов с конца слова, при поиске наиболее подходящего варианта.
@@ -56,9 +52,7 @@ namespace Cyriller
         /// <returns></returns>
         public IEnumerable<CyrAdjective> SelectAdjectives()
         {
-            return this.words
-                .Where(x => x.Key.Gender == GendersEnum.Masculine && x.Key.Case == CasesEnum.Nominative && x.Key.Number == NumbersEnum.Singular && x.Key.Animate == AnimatesEnum.Animated)
-                .Select(x => new CyrAdjective(x.Value));
+            return this.words.Distinct().Select(x => new CyrAdjective(x.Value));
         }
 
         /// <summary>

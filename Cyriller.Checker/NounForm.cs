@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Diagnostics;
 using Cyriller.Model;
 
 namespace Cyriller.Checker
@@ -30,9 +31,21 @@ namespace Cyriller.Checker
             txtCase6.Text = Result[6];
         }
 
+        protected void Log(string text)
+        {
+            string line = $"{DateTime.Now.ToString("yyyy.MM.dd HH:mm: ")} {text}{Environment.NewLine}";
+            txtLog.Text = line + txtLog.Text;
+        }
+
         private void NounForm_Load(object sender, EventArgs e)
         {
+            Stopwatch watch = new Stopwatch();
+
+            watch.Start();
             cyrCollection = new CyrNounCollection();
+            watch.Stop();
+            this.Log($"Создание {nameof(CyrNounCollection)} заняло {watch.Elapsed}.");
+
             ddlAction.SelectedIndex = 0;
             this.ParentForm.AcceptButton = btnDecline;
         }
@@ -46,10 +59,34 @@ namespace Cyriller.Checker
             }
 
             CyrNoun noun;
+            string foundWord;
+            CasesEnum foundCase;
+            NumbersEnum foundNumber;
+            CyrResult result = null;
 
             try
             {
-                noun = cyrCollection.Get(txtWord.Text, GetConditionsEnum.Similar);
+                Stopwatch watch = new Stopwatch();
+
+                watch.Start();
+                noun = cyrCollection.Get(txtWord.Text, out foundWord, out foundCase, out foundNumber);
+
+                switch (ddlAction.SelectedIndex)
+                {
+                    case 0:
+                        result = noun.Decline();
+                        break;
+                    case 1:
+                        result = noun.DeclinePlural();
+                        break;
+
+                    default:
+                        MessageBox.Show("Необходимо выбрать тип склонения!");
+                        return;
+                }
+
+                watch.Stop();
+                this.Log($"Склонение слова {txtWord.Text} заняло {watch.Elapsed}.");
             }
             catch (CyrWordNotFoundException)
             {
@@ -57,47 +94,11 @@ namespace Cyriller.Checker
                 return;
             }
 
-            switch (ddlAction.SelectedIndex)
-            { 
-                case 0:
-                    this.SetResult(noun.Decline());
-                    break;
-                case 1:
-                    this.SetResult(noun.DeclinePlural());
-                    break;
+            this.SetResult(result);
+            txtCollectionName.Text = foundWord;
+            txtDetails.Text = $"{foundCase}, {foundNumber}, {noun.Gender}, {noun.Animate}, {noun.WordType}";
 
-                default:
-                    MessageBox.Show("Необходимо выбрать тип склонения!");
-                    return;
-            }
-
-            txtCollectionName.Text = noun.CollectionName;
-            txtDetails.Text = string.Empty;
-
-            switch (noun.Gender)
-            {
-                case Cyriller.Model.GendersEnum.Feminine:
-                    txtDetails.Text += "женский род, ";
-                    break;
-                case Cyriller.Model.GendersEnum.Masculine:
-                    txtDetails.Text += "мужской род, ";
-                    break;
-                case Cyriller.Model.GendersEnum.Neuter:
-                    txtDetails.Text += "средний род, ";
-                    break;
-            }
-
-            switch (noun.Animate)
-            { 
-                case Cyriller.Model.AnimatesEnum.Animated:
-                    txtDetails.Text += "одушевленное";
-                    break;
-                default:
-                    txtDetails.Text += "неодушевленное";
-                    break;
-            }
-
-            if (noun.ExactMatch)
+            if (txtWord.Text == foundWord)
             {
                 txtCollectionName.BackColor = System.Drawing.SystemColors.Control;
             }
