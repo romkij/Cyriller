@@ -71,6 +71,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CyrRuleTests.cs" />
     <Compile Include="Model\AdjectiveDictionary.cs">
       <DependentUpon>Model.tt</DependentUpon>
     </Compile>
