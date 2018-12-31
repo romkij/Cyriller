@@ -172,7 +172,9 @@ form.decline-form.form-horizontal .form-group {
 
 .h-word .gender,
 .h-word .animate,
-.h-word .type {
+.h-word .type,
+.h-word .case,
+.h-word .number {
     font-size: 14px;
     color: darkred;
     font-style: italic;
@@ -184,6 +186,14 @@ form.decline-form.form-horizontal .form-group {
 
 .h-word .type {
     color: darkblue;
+}
+
+.h-word .case {
+    color: gray;
+}
+
+.h-word .number {
+    color: darkviolet;
 }
 
 .table-cases {

@@ -6,6 +6,7 @@ using System.Web.Mvc;
 using System.IO;
 using OfficeOpenXml;
 using Cyriller.Model;
+using Cyriller.Web.Models;
 
 namespace Cyriller.Web.Controllers
 {
@@ -25,18 +26,19 @@ namespace Cyriller.Web.Controllers
             }
 
             List<string> errors = new List<string>();
-            List<CyrNoun> words = new List<CyrNoun>();
-            List<CyrResult> singulars = new List<CyrResult>();
-            List<CyrResult> plurals = new List<CyrResult>();
             CyrNounCollection collection = this.NounCollection;
+            List<CyrNounDeclineResult> results = new List<CyrNounDeclineResult>();
 
             foreach (string s in w.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries))
             {
                 CyrNoun word;
+                string foundWord;
+                CasesEnum foundCase;
+                NumbersEnum foundNumber;
 
                 try
                 {
-                    word = collection.Get(s, out string fw, out CasesEnum c, out NumbersEnum n);
+                    word = collection.Get(s, out foundWord, out foundCase, out foundNumber);
                 }
                 catch (CyrWordNotFoundException)
                 {
@@ -44,16 +46,26 @@ namespace Cyriller.Web.Controllers
                     continue;
                 }
 
-                words.Add(word);
-                singulars.Add(word.Decline());
-                plurals.Add(word.DeclinePlural());
+                CyrNounDeclineResult result = new CyrNounDeclineResult()
+                {
+                    Name = word.Name,
+                    OriginalWord = s,
+                    FoundWord = foundWord,
+                    FoundCase = foundCase,
+                    FoundNumber = foundNumber,
+                    Singular = word.Decline(),
+                    Plural = word.DeclinePlural(),
+                    Gender = word.Gender,
+                    WordType = word.WordType,
+                    IsAnimated = word.IsAnimated
+                };
+
+                results.Add(result);
             }
 
             ViewBag.Text = w;
             ViewBag.Errors = errors;
-            ViewBag.Words = words;
-            ViewBag.Singulars = singulars;
-            ViewBag.Plurals = plurals;
+            ViewBag.Results = results;
             ViewBag.Cases = CyrDeclineCase.List;
 
             return View();
