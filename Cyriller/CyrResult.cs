@@ -276,7 +276,8 @@ namespace Cyriller
         }
 
         /// <summary>
-        /// One based index. See the CasesEnum enumeration.
+        /// Индекс для получения формы слова по номеру падежа. Доступные значения 1 – 6. 
+        /// Смотри <see cref="CasesEnum"/>.
         /// </summary>
         /// <param name="index"></param>
         /// <returns></returns>

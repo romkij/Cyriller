@@ -318,11 +318,11 @@ namespace Cyriller
         }
 
         /// <summary>
-        /// Adds a word to the <see cref="words"/> dictionary.
+        /// Добавляет слово в <see cref="words"/> словарь.
         /// </summary>
         /// <param name="line">
-        /// Word in the Cyriller dictionary format.
-        /// See /Cyriller/App_Data/nouns.txt.
+        /// Строка со словом в формате словаря.
+        /// Смотри /Cyriller/App_Data/nouns.txt.
         /// </param>
         protected virtual void AddWordToTheCollection(string line, ConcurrentBag<string>[] singularWordCandidates, ConcurrentBag<string>[] pluralWordCandidates)
         {
