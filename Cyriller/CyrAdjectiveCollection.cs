@@ -406,7 +406,7 @@ namespace Cyriller
                     }
                 }
                 {
-                    CyrResult result = adjective.Decline(GendersEnum.Feminine, AnimatesEnum.Animated);
+                    CyrResult result = adjective.Decline(GendersEnum.Neuter, AnimatesEnum.Animated);
 
                     foreach (CasesEnum @case in cases)
                     {
@@ -414,7 +414,7 @@ namespace Cyriller
 
                         foreach (AnimatesEnum animate in this.animates)
                         {
-                            DictionaryKey key = new DictionaryKey(result[(int)@case], GendersEnum.Feminine, @case, NumbersEnum.Singular, animate);
+                            DictionaryKey key = new DictionaryKey(result[(int)@case], GendersEnum.Neuter, @case, NumbersEnum.Singular, animate);
                             adjectives.Add(new KeyValuePair<DictionaryKey, CyrAdjective>(key, adjective));
                         }
                     }
