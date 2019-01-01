@@ -39,7 +39,7 @@
 {
     foreach (CyrNounDeclineResult result in ViewBag.Results)
     {
-        string[] values = new string[] { result.FoundCaseStringRu, result.NumberStringRu, result.GenderStringRu, result.AnimatedStringRu, result.WordTypeStringRu };
+        string[] values = new string[] { result.FoundCaseStringRu, result.FoundNumberStringRu, result.GenderStringRu, result.AnimatedStringRu, result.WordTypeStringRu };
         string[] css = new string[] { "case", "number", "gender", "animate", "type" };
 
         <h2 class="h-word">
@@ -102,7 +102,7 @@
 else
 {
     <p class="p p-examples">
-        Введите слово или полное ФИО для склонения по падежам.<br />Например:
+        Введите существительное, в любом числе и падеже, для склонения по падежам.<br />Например:
         <a href="javascript:">компьютер</a>,
         <a href="javascript:">пиво</a>,
         <a href="javascript:">кофе</a>,
