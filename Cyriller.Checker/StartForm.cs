@@ -54,16 +54,6 @@ namespace Cyriller.Checker
             OpenForm(new PhraseForm());
         }
 
-        private void msiZipDictionary_Click(object sender, EventArgs e)
-        {
-            OpenForm(new ZipForm());
-        }
-
-        private void msiRuleNoun_Click(object sender, EventArgs e)
-        {
-            OpenForm(new NounRuleForm());
-        }
-
         private void msiExportToJson_Click(object sender, EventArgs e)
         {
             OpenForm(new JsonForm());

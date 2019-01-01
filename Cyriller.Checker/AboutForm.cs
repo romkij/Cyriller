@@ -26,5 +26,10 @@ namespace Cyriller.Checker
         {
             System.Diagnostics.Process.Start(lblWebsite.Text);
         }
+
+        private void lblGitHub_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            System.Diagnostics.Process.Start(lblGitHub.Text);
+        }
     }
 }

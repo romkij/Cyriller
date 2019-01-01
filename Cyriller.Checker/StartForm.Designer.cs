@@ -40,11 +40,8 @@
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.msiExit = new System.Windows.Forms.ToolStripMenuItem();
             this.msiDictionary = new System.Windows.Forms.ToolStripMenuItem();
-            this.msiZipDictionary = new System.Windows.Forms.ToolStripMenuItem();
-            this.msiRule = new System.Windows.Forms.ToolStripMenuItem();
-            this.msiRuleNoun = new System.Windows.Forms.ToolStripMenuItem();
-            this.pnlContainer = new System.Windows.Forms.Panel();
             this.msiExportToJson = new System.Windows.Forms.ToolStripMenuItem();
+            this.pnlContainer = new System.Windows.Forms.Panel();
             this.tableLayoutPanel1.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -53,27 +50,30 @@
             // 
             this.tableLayoutPanel1.ColumnCount = 1;
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 40F));
             this.tableLayoutPanel1.Controls.Add(this.menuStrip1, 0, 0);
             this.tableLayoutPanel1.Controls.Add(this.pnlContainer, 0, 1);
             this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 0);
+            this.tableLayoutPanel1.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
             this.tableLayoutPanel1.RowCount = 2;
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 58F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(984, 561);
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(1254, 953);
             this.tableLayoutPanel1.TabIndex = 0;
             // 
             // menuStrip1
             // 
             this.menuStrip1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.menuStrip1.ImageScalingSize = new System.Drawing.Size(32, 32);
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.msiFile,
             this.msiDictionary});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(984, 30);
+            this.menuStrip1.Padding = new System.Windows.Forms.Padding(12, 4, 0, 4);
+            this.menuStrip1.Size = new System.Drawing.Size(1254, 58);
             this.menuStrip1.TabIndex = 0;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -88,110 +88,88 @@
             this.toolStripSeparator2,
             this.msiExit});
             this.msiFile.Name = "msiFile";
-            this.msiFile.Size = new System.Drawing.Size(48, 26);
+            this.msiFile.Size = new System.Drawing.Size(83, 50);
             this.msiFile.Text = "Файл";
             // 
             // msiNoun
             // 
             this.msiNoun.Name = "msiNoun";
-            this.msiNoun.Size = new System.Drawing.Size(226, 22);
+            this.msiNoun.Size = new System.Drawing.Size(416, 38);
             this.msiNoun.Text = "Склонять существительное";
             this.msiNoun.Click += new System.EventHandler(this.msiNoun_Click);
             // 
             // msiAdjective
             // 
             this.msiAdjective.Name = "msiAdjective";
-            this.msiAdjective.Size = new System.Drawing.Size(226, 22);
+            this.msiAdjective.Size = new System.Drawing.Size(416, 38);
             this.msiAdjective.Text = "Склонять прилагательное";
             this.msiAdjective.Click += new System.EventHandler(this.msiAdjective_Click);
             // 
             // msiNumber
             // 
             this.msiNumber.Name = "msiNumber";
-            this.msiNumber.Size = new System.Drawing.Size(226, 22);
+            this.msiNumber.Size = new System.Drawing.Size(416, 38);
             this.msiNumber.Text = "Склонять число";
             this.msiNumber.Click += new System.EventHandler(this.msiNumber_Click);
             // 
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(223, 6);
+            this.toolStripSeparator1.Size = new System.Drawing.Size(413, 6);
             // 
             // msiPhrase
             // 
             this.msiPhrase.Name = "msiPhrase";
-            this.msiPhrase.Size = new System.Drawing.Size(226, 22);
+            this.msiPhrase.Size = new System.Drawing.Size(416, 38);
             this.msiPhrase.Text = "Склонять словосочетание";
             this.msiPhrase.Click += new System.EventHandler(this.msiPhrase_Click);
             // 
             // toolStripSeparator2
             // 
             this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(223, 6);
+            this.toolStripSeparator2.Size = new System.Drawing.Size(413, 6);
             // 
             // msiExit
             // 
             this.msiExit.Name = "msiExit";
-            this.msiExit.Size = new System.Drawing.Size(226, 22);
+            this.msiExit.Size = new System.Drawing.Size(416, 38);
             this.msiExit.Text = "Выход";
             this.msiExit.Click += new System.EventHandler(this.msiExit_Click);
             // 
             // msiDictionary
             // 
             this.msiDictionary.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.msiZipDictionary,
-            this.msiRule,
             this.msiExportToJson});
             this.msiDictionary.Name = "msiDictionary";
-            this.msiDictionary.Size = new System.Drawing.Size(66, 26);
+            this.msiDictionary.Size = new System.Drawing.Size(120, 50);
             this.msiDictionary.Text = "Словарь";
-            // 
-            // msiZipDictionary
-            // 
-            this.msiZipDictionary.Name = "msiZipDictionary";
-            this.msiZipDictionary.Size = new System.Drawing.Size(180, 22);
-            this.msiZipDictionary.Text = "Запаковать";
-            this.msiZipDictionary.Click += new System.EventHandler(this.msiZipDictionary_Click);
-            // 
-            // msiRule
-            // 
-            this.msiRule.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.msiRuleNoun});
-            this.msiRule.Name = "msiRule";
-            this.msiRule.Size = new System.Drawing.Size(180, 22);
-            this.msiRule.Text = "Правило";
-            // 
-            // msiRuleNoun
-            // 
-            this.msiRuleNoun.Name = "msiRuleNoun";
-            this.msiRuleNoun.Size = new System.Drawing.Size(173, 22);
-            this.msiRuleNoun.Text = "Существительное";
-            this.msiRuleNoun.Click += new System.EventHandler(this.msiRuleNoun_Click);
-            // 
-            // pnlContainer
-            // 
-            this.pnlContainer.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.pnlContainer.Location = new System.Drawing.Point(3, 33);
-            this.pnlContainer.Name = "pnlContainer";
-            this.pnlContainer.Size = new System.Drawing.Size(978, 525);
-            this.pnlContainer.TabIndex = 1;
             // 
             // msiExportToJson
             // 
             this.msiExportToJson.Name = "msiExportToJson";
-            this.msiExportToJson.Size = new System.Drawing.Size(180, 22);
+            this.msiExportToJson.Size = new System.Drawing.Size(324, 38);
             this.msiExportToJson.Text = "Выгрузить в JSON";
             this.msiExportToJson.Click += new System.EventHandler(this.msiExportToJson_Click);
             // 
+            // pnlContainer
+            // 
+            this.pnlContainer.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.pnlContainer.Location = new System.Drawing.Point(6, 64);
+            this.pnlContainer.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
+            this.pnlContainer.Name = "pnlContainer";
+            this.pnlContainer.Size = new System.Drawing.Size(1242, 883);
+            this.pnlContainer.TabIndex = 1;
+            // 
             // StartForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(12F, 25F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(984, 561);
+            this.ClientSize = new System.Drawing.Size(1254, 953);
             this.Controls.Add(this.tableLayoutPanel1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MainMenuStrip = this.menuStrip1;
-            this.MinimumSize = new System.Drawing.Size(800, 600);
+            this.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
+            this.MinimumSize = new System.Drawing.Size(1280, 1024);
             this.Name = "StartForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Кириллер - бесплатная программа склонения по падежам";
@@ -218,9 +196,6 @@
         private System.Windows.Forms.ToolStripMenuItem msiPhrase;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
         private System.Windows.Forms.ToolStripMenuItem msiDictionary;
-        private System.Windows.Forms.ToolStripMenuItem msiZipDictionary;
-        private System.Windows.Forms.ToolStripMenuItem msiRule;
-        private System.Windows.Forms.ToolStripMenuItem msiRuleNoun;
         private System.Windows.Forms.ToolStripMenuItem msiExportToJson;
     }
 }

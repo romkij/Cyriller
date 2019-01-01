@@ -124,12 +124,6 @@
     <Compile Include="NounForm.Designer.cs">
       <DependentUpon>NounForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="NounRuleForm.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="NounRuleForm.Designer.cs">
-      <DependentUpon>NounRuleForm.cs</DependentUpon>
-    </Compile>
     <Compile Include="NumberForm.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -150,12 +144,6 @@
     <Compile Include="StartForm.Designer.cs">
       <DependentUpon>StartForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="ZipForm.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="ZipForm.Designer.cs">
-      <DependentUpon>ZipForm.cs</DependentUpon>
-    </Compile>
     <EmbeddedResource Include="AboutForm.resx">
       <DependentUpon>AboutForm.cs</DependentUpon>
     </EmbeddedResource>
@@ -167,9 +155,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="NounForm.resx">
       <DependentUpon>NounForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="NounRuleForm.resx">
-      <DependentUpon>NounRuleForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="NumberForm.resx">
       <DependentUpon>NumberForm.cs</DependentUpon>
@@ -189,9 +174,6 @@
     </Compile>
     <EmbeddedResource Include="StartForm.resx">
       <DependentUpon>StartForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="ZipForm.resx">
-      <DependentUpon>ZipForm.cs</DependentUpon>
     </EmbeddedResource>
     <EntityDeploy Include="Model\CyrillerModel.edmx">
       <Generator>EntityModelCodeGenerator</Generator>
