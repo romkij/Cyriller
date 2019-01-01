@@ -57,7 +57,7 @@ namespace Cyriller.Web.Controllers
                     Plural = word.DeclinePlural(),
                     Gender = word.Gender,
                     WordType = word.WordType,
-                    IsAnimated = word.IsAnimated
+                    Animate = word.Animate
                 };
 
                 results.Add(result);
@@ -82,9 +82,7 @@ namespace Cyriller.Web.Controllers
             }
 
             List<string> errors = new List<string>();
-            List<CyrAdjective> words = new List<CyrAdjective>();
-            List<CyrResult> singulars = new List<CyrResult>();
-            List<CyrResult> plurals = new List<CyrResult>();
+            List<CyrAdjectiveDeclineResult> results = new List<CyrAdjectiveDeclineResult>();
             CyrAdjectiveCollection collection = this.AdjectiveCollection;
 
             foreach (string s in w.Split(' ').Where(val => !string.IsNullOrEmpty(val)))
@@ -106,16 +104,25 @@ namespace Cyriller.Web.Controllers
                     continue;
                 }
 
-                words.Add(word);
-                singulars.Add(word.Decline(foundGender, foundAnimate));
-                plurals.Add(word.DeclinePlural(foundAnimate));
+                CyrAdjectiveDeclineResult result = new CyrAdjectiveDeclineResult()
+                {
+                    Name = word.Name,
+                    OriginalWord = s,
+                    FoundWord = foundWord,
+                    FoundGender = foundGender,
+                    FoundCase = foundCase,
+                    FoundNumber = foundNumber,
+                    FoundAnimate = foundAnimate,
+                    Singular = word.Decline(foundGender == 0 ? GendersEnum.Masculine : foundGender, foundAnimate),
+                    Plural = word.DeclinePlural(foundAnimate)
+                };
+
+                results.Add(result);
             }
 
             ViewBag.Text = w;
             ViewBag.Errors = errors;
-            ViewBag.Words = words;
-            ViewBag.Singulars = singulars;
-            ViewBag.Plurals = plurals;
+            ViewBag.Results = results;
             ViewBag.Cases = CyrDeclineCase.List;
 
             return View();
