@@ -9,15 +9,15 @@ namespace Cyriller
     public class CyrName
     {
         /// <summary>
-        /// 
+        /// Склоняет полное имя в указанный падеж.
         /// </summary>
-        /// <param name="inputSurname">Фамилия</param>
-        /// <param name="inputName">Имя</param>
-        /// <param name="inputPatronymic">Отчество</param>
-        /// <param name="inputCase">Падеж</param>
-        /// <param name="inputGender">Пол</param>
-        /// <param name="inputShorten">Сокращенно</param>
-        /// <returns>Возвращает массив из трех элементов [Фамилия, Имя, Отчество]</returns>
+        /// <param name="inputSurname">Фамилия, в именительном падеже.</param>
+        /// <param name="inputName">Имя, в именительном падеже.</param>
+        /// <param name="inputPatronymic">Отчество, в именительном падеже.</param>
+        /// <param name="inputCase">Падеж, в который нужно просклонять, где 1 – именительный, 2 – родительный, 3 – дательный, 4 – винительный, 5 – творительный, 6 – предложный.</param>
+        /// <param name="inputGender">Пол, указанного имени, где 0 – определить автоматически, 1 – мужской, 2 – женский.</param>
+        /// <param name="inputShorten">Сократить ли имя и отчество в результате склонения. К примеру, Иванов Иван Иванович, будет Иванов И. И.</param>
+        /// <returns>Возвращает результат склонения в виде массива из трех элементов [Фамилия, Имя, Отчество].</returns>
         public string[] Decline(string inputSurname, string inputName, string inputPatronymic, int inputCase = 1, int inputGender = 0, bool inputShorten = false)
         {
             string temp = null;
@@ -128,6 +128,14 @@ namespace Cyriller
             return new string[] { surname, name, patronymic };
         }
 
+        /// <summary>
+        /// Склоняет полное имя в указанный падеж.
+        /// </summary>
+        /// <param name="fullName">Полное имя, в именительном падеже.</param>
+        /// <param name="case">Падеж, в который нужно просклонять, где 1 – именительный, 2 – родительный, 3 – дательный, 4 – винительный, 5 – творительный, 6 – предложный.</param>
+        /// <param name="gender">Пол, указанного имени, где 0 – определить автоматически, 1 – мужской, 2 – женский.</param>
+        /// <param name="shorten">Сократить ли имя и отчество в результате склонения. К примеру, Иванов Иван Иванович, будет Иванов И. И.</param>
+        /// <returns>Возвращает результат склонения.</returns>
         public string Decline(string fullName, int @case = 1, int gender = 0, bool shorten = false)
         {
             string strF = null;
@@ -197,9 +205,10 @@ namespace Cyriller
         /// <summary>
         /// Родительный, Кого? Чего? (нет)
         /// </summary>
-        /// <param name="name"></param>
-        /// <param name="isFeminine"></param>
-        /// <returns></returns>
+        /// <param name="name">Имя, для склонения.</param>
+        /// <param name="isFeminine">True, для женских имен.</param>
+        /// <param name="shorten">Сократить ли имя, к примеру, Иван будет И.</param>
+        /// <returns>Возвращает результат склонения.</returns>
         public string DeclineNameGenitive(string name, bool isFeminine, bool shorten)
         {
             string temp;
@@ -286,10 +295,10 @@ namespace Cyriller
         /// <summary>
         /// Дательный, Кому? Чему? (дам)
         /// </summary>
-        /// <param name="name"></param>
-        /// <param name="isFeminine"></param>
-        /// <param name="shorten"></param>
-        /// <returns></returns>
+        /// <param name="name">Имя, для склонения.</param>
+        /// <param name="isFeminine">True, для женских имен.</param>
+        /// <param name="shorten">Сократить ли имя, к примеру, Иван будет И.</param>
+        /// <returns>Возвращает результат склонения.</returns>
         public string DeclineNameDative(string name, bool isFeminine, bool shorten)
         {
             string temp;
@@ -370,10 +379,10 @@ namespace Cyriller
         /// <summary>
         /// Винительный, Кого? Что? (вижу)
         /// </summary>
-        /// <param name="name"></param>
-        /// <param name="isFeminine"></param>
-        /// <param name="shorten"></param>
-        /// <returns></returns>
+        /// <param name="name">Имя, для склонения.</param>
+        /// <param name="isFeminine">True, для женских имен.</param>
+        /// <param name="shorten">Сократить ли имя, к примеру, Иван будет И.</param>
+        /// <returns>Возвращает результат склонения.</returns>
         public string DeclineNameAccusative(string name, bool isFeminine, bool shorten)
         {
             string temp;
@@ -454,10 +463,10 @@ namespace Cyriller
         /// <summary>
         /// Творительный, Кем? Чем? (горжусь)
         /// </summary>
-        /// <param name="name"></param>
-        /// <param name="isFeminine"></param>
-        /// <param name="shorten"></param>
-        /// <returns></returns>
+        /// <param name="name">Имя, для склонения.</param>
+        /// <param name="isFeminine">True, для женских имен.</param>
+        /// <param name="shorten">Сократить ли имя, к примеру, Иван будет И.</param>
+        /// <returns>Возвращает результат склонения.</returns>
         public string DeclineNameInstrumental(string name, bool isFeminine, bool shorten)
         {
             string temp;
@@ -544,10 +553,10 @@ namespace Cyriller
         /// <summary>
         /// Предложный, О ком? О чем? (думаю)
         /// </summary>
-        /// <param name="name"></param>
-        /// <param name="isFeminine"></param>
-        /// <param name="shorten"></param>
-        /// <returns></returns>
+        /// <param name="name">Имя, для склонения.</param>
+        /// <param name="isFeminine">True, для женских имен.</param>
+        /// <param name="shorten">Сократить ли имя, к примеру, Иван будет И.</param>
+        /// <returns>Возвращает результат склонения.</returns>
         public string DeclineNamePrepositional(string name, bool isFeminine, bool shorten)
         {
             string temp;
@@ -630,9 +639,14 @@ namespace Cyriller
         /// <summary>
         /// Родительный, Кого? Чего? (нет)
         /// </summary>
-        /// <param name="Name"></param>
-        /// <param name="isFeminine"></param>
-        /// <returns></returns>
+        /// <param name="patronymic">Отчество, для склонения.</param>
+        /// <param name="patronymicAfter">
+        /// Используется для составных отчеств, к примеру тюркские варианты Салим-оглы или Салим-кызы.
+        /// https://ru.wikipedia.org/wiki/%D0%9E%D1%82%D1%87%D0%B5%D1%81%D1%82%D0%B2%D0%BE
+        /// </param>
+        /// <param name="isFeminine">True, для женских отчеств.</param>
+        /// <param name="shorten">Сократить ли отчество, к примеру, Иванович будет И.</param>
+        /// <returns>Возвращает результат склонения.</returns>
         public string DeclinePatronymicGenitive(string patronymic, string patronymicAfter, bool isFeminine, bool shorten)
         {
             if (patronymic.Length <= 1 || patronymic.EndsWith("."))
@@ -683,10 +697,14 @@ namespace Cyriller
         /// <summary>
         /// Дательный, Кому? Чему? (дам)
         /// </summary>
-        /// <param name="Name"></param>
-        /// <param name="IsFeminine"></param>
-        /// <param name="shorten"></param>
-        /// <returns></returns>
+        /// <param name="patronymic">Отчество, для склонения.</param>
+        /// <param name="patronymicAfter">
+        /// Используется для составных отчеств, к примеру тюркские варианты Салим-оглы или Салим-кызы.
+        /// https://ru.wikipedia.org/wiki/%D0%9E%D1%82%D1%87%D0%B5%D1%81%D1%82%D0%B2%D0%BE
+        /// </param>
+        /// <param name="isFeminine">True, для женских отчеств.</param>
+        /// <param name="shorten">Сократить ли отчество, к примеру, Иванович будет И.</param>
+        /// <returns>Возвращает результат склонения.</returns>
         public string DeclinePatronymicDative(string patronymic, string patronymicAfter, bool isFeminine, bool shorten)
         {
             if (patronymic.Length <= 1 || patronymic.EndsWith("."))
@@ -735,10 +753,14 @@ namespace Cyriller
         /// <summary>
         /// Винительный, Кого? Что? (вижу)
         /// </summary>
-        /// <param name="Name"></param>
-        /// <param name="isFeminine"></param>
-        /// <param name="shorten"></param>
-        /// <returns></returns>
+        /// <param name="patronymic">Отчество, для склонения.</param>
+        /// <param name="patronymicAfter">
+        /// Используется для составных отчеств, к примеру тюркские варианты Салим-оглы или Салим-кызы.
+        /// https://ru.wikipedia.org/wiki/%D0%9E%D1%82%D1%87%D0%B5%D1%81%D1%82%D0%B2%D0%BE
+        /// </param>
+        /// <param name="isFeminine">True, для женских отчеств.</param>
+        /// <param name="shorten">Сократить ли отчество, к примеру, Иванович будет И.</param>
+        /// <returns>Возвращает результат склонения.</returns>
         public string DeclinePatronymicAccusative(string patronymic, string patronymicAfter, bool isFeminine, bool shorten)
         {
             if (patronymic.Length <= 1 || patronymic.EndsWith("."))
@@ -788,10 +810,14 @@ namespace Cyriller
         /// <summary>
         /// Творительный, Кем? Чем? (горжусь)
         /// </summary>
-        /// <param name="Name"></param>
-        /// <param name="isFeminine"></param>
-        /// <param name="shorten"></param>
-        /// <returns></returns>
+        /// <param name="patronymic">Отчество, для склонения.</param>
+        /// <param name="patronymicAfter">
+        /// Используется для составных отчеств, к примеру тюркские варианты Салим-оглы или Салим-кызы.
+        /// https://ru.wikipedia.org/wiki/%D0%9E%D1%82%D1%87%D0%B5%D1%81%D1%82%D0%B2%D0%BE
+        /// </param>
+        /// <param name="isFeminine">True, для женских отчеств.</param>
+        /// <param name="shorten">Сократить ли отчество, к примеру, Иванович будет И.</param>
+        /// <returns>Возвращает результат склонения.</returns>
         public string DeclinePatronymicInstrumental(string patronymic, string patronymicAfter, bool isFeminine, bool shorten)
         {
             string temp;
@@ -859,10 +885,14 @@ namespace Cyriller
         /// <summary>
         /// Творительный, Кем? Чем? (горжусь)
         /// </summary>
-        /// <param name="Name"></param>
-        /// <param name="isFeminine"></param>
-        /// <param name="shorten"></param>
-        /// <returns></returns>
+        /// <param name="patronymic">Отчество, для склонения.</param>
+        /// <param name="patronymicAfter">
+        /// Используется для составных отчеств, к примеру тюркские варианты Салим-оглы или Салим-кызы.
+        /// https://ru.wikipedia.org/wiki/%D0%9E%D1%82%D1%87%D0%B5%D1%81%D1%82%D0%B2%D0%BE
+        /// </param>
+        /// <param name="isFeminine">True, для женских отчеств.</param>
+        /// <param name="shorten">Сократить ли отчество, к примеру, Иванович будет И.</param>
+        /// <returns>Возвращает результат склонения.</returns>
         public string DeclinePatronymicPrepositional(string patronymic, string patronymicAfter, bool isFeminine, bool shorten)
         {
             if (patronymic.Length <= 1 || patronymic.EndsWith("."))
@@ -911,9 +941,9 @@ namespace Cyriller
         /// <summary>
         /// Родительный, Кого? Чего? (нет)
         /// </summary>
-        /// <param name="surname"></param>
-        /// <param name="isFeminine"></param>
-        /// <returns></returns>
+        /// <param name="surname">Фамилия, для склонения.</param>
+        /// <param name="isFeminine">True, для женских фамилий.</param>
+        /// <returns>Возвращает результат склонения.</returns>
         public string DeclineSurnameGenitive(string surname, bool isFeminine)
         {
             string temp = surname;
@@ -1138,9 +1168,9 @@ namespace Cyriller
         /// <summary>
         /// Дательный, Кому? Чему? (дам)
         /// </summary>
-        /// <param name="surname"></param>
-        /// <param name="isFeminine"></param>
-        /// <returns></returns>
+        /// <param name="surname">Фамилия, для склонения.</param>
+        /// <param name="isFeminine">True, для женских фамилий.</param>
+        /// <returns>Возвращает результат склонения.</returns>
         public string DeclineSurnameDative(string surname, bool isFeminine)
         {
             string temp = surname;
@@ -1356,9 +1386,9 @@ namespace Cyriller
         /// <summary>
         /// Винительный, Кого? Что? (вижу)
         /// </summary>
-        /// <param name="surname"></param>
-        /// <param name="isFeminine"></param>
-        /// <returns></returns>
+        /// <param name="surname">Фамилия, для склонения.</param>
+        /// <param name="isFeminine">True, для женских фамилий.</param>
+        /// <returns>Возвращает результат склонения.</returns>
         public string DeclineSurnameAccusative(string surname, bool isFeminine)
         {
             string temp = surname;
@@ -1555,9 +1585,9 @@ namespace Cyriller
         /// <summary>
         /// Творительный, Кем? Чем? (горжусь)
         /// </summary>
-        /// <param name="surname"></param>
-        /// <param name="isFeminine"></param>
-        /// <returns></returns>
+        /// <param name="surname">Фамилия, для склонения.</param>
+        /// <param name="isFeminine">True, для женских фамилий.</param>
+        /// <returns>Возвращает результат склонения.</returns>
         public string DeclineSurnameInstrumental(string surname, bool isFeminine)
         {
             string temp = surname;
@@ -1796,9 +1826,9 @@ namespace Cyriller
         /// <summary>
         /// Предложный, О ком? О чем? (думаю)
         /// </summary>
-        /// <param name="surname"></param>
-        /// <param name="isFeminine"></param>
-        /// <returns></returns>
+        /// <param name="surname">Фамилия, для склонения.</param>
+        /// <param name="isFeminine">True, для женских фамилий.</param>
+        /// <returns>Возвращает результат склонения.</returns>
         public string DeclineSurnamePrepositional(string surname, bool isFeminine)
         {
             string temp = surname;
@@ -2011,6 +2041,13 @@ namespace Cyriller
             return surname;
         }
 
+        /// <summary>
+        /// Склоняет фамилию в указанный падеж.
+        /// </summary>
+        /// <param name="surname">Фамилия, в именительном падеже.</param>
+        /// <param name="case">Падеж, в который нужно просклонять фамилию, где 1 – именительный, 2 – родительный, 3 – дательный, 4 – винительный, 5 – творительный, 6 – предложный.</param>
+        /// <param name="isFeminine">True, для женских фамилий.</param>
+        /// <returns>Возвращает результат склонения.</returns>
         public string DeclineSurname(string surname, int @case, bool isFeminine)
         {
             string result = surname;
