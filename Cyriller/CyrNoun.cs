@@ -116,7 +116,7 @@ namespace Cyriller
             for (int i = 0; i < parts.Length; i++)
             {
                 CyrRule[] rules = this.GetRules(number, i);
-                CyrResult result = this.GetResult(this.Name, rules);
+                CyrResult result = this.GetResult(parts[i], rules);
 
                 results.Add(result);
             }
