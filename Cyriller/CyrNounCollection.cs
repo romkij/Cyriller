@@ -51,7 +51,7 @@ namespace Cyriller
             ConcurrentBag<string>[] singularWordCandidates = new ConcurrentBag<string>[] { new ConcurrentBag<string>(), new ConcurrentBag<string>(), new ConcurrentBag<string>(), new ConcurrentBag<string>(), new ConcurrentBag<string>(), new ConcurrentBag<string>() };
             ConcurrentBag<string>[] pluralWordCandidates = new ConcurrentBag<string>[] { new ConcurrentBag<string>(), new ConcurrentBag<string>(), new ConcurrentBag<string>(), new ConcurrentBag<string>(), new ConcurrentBag<string>(), new ConcurrentBag<string>() };
 
-            for (; ; )
+            while (true)
             {
                 line = treader.ReadLine();
 
