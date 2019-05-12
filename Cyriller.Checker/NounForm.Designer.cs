@@ -326,7 +326,7 @@
             this.label11.Name = "label11";
             this.label11.Size = new System.Drawing.Size(661, 25);
             this.label11.TabIndex = 30;
-            this.label11.Text = "Существительное в именительном падеже единственного числа";
+            this.label11.Text = "Существительное в любой форме";
             // 
             // txtLog
             // 
