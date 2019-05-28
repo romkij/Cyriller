@@ -92,6 +92,11 @@ namespace Cyriller
 
         public CyrResult Decline()
         {
+            if (this.rules == null)
+            {
+                return new CyrResult(this.name);
+            }
+
             string[] parts = this.name.Split(Hyphen[0]);
 
             if (parts.Length == 1 || this.rules.Length <= 11)
@@ -111,6 +116,11 @@ namespace Cyriller
 
         public CyrResult DeclinePlural()
         {
+            if (this.rules == null)
+            {
+                return new CyrResult(this.name);
+            }
+
             string[] parts = this.name.Split(Hyphen[0]);
 
             if (parts.Length == 1 || this.rules.Length <= 11)

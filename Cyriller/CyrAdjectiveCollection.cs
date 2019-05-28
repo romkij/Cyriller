@@ -86,7 +86,14 @@ namespace Cyriller
 
             if (details.IsNullOrEmpty())
             {
-                throw new CyrWordNotFoundException(Word);
+                if (CyrBehaviour.ThrowOnWordNotFound)
+                {
+                    throw new CyrWordNotFoundException(Word);
+                }
+                else
+                {
+                    return new CyrAdjective(Word, string.Empty, DefaultGender, null);
+                }
             }
 
             int ruleID = int.Parse(details);
@@ -98,7 +105,7 @@ namespace Cyriller
             {
                 Word = rules[22].Apply(Word);
             }
-            else if(gender == GendersEnum.Neuter)
+            else if (gender == GendersEnum.Neuter)
             {
                 Word = rules[23].Apply(Word);
             }

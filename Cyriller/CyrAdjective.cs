@@ -64,6 +64,11 @@ namespace Cyriller
 
         public CyrResult Decline(AnimatesEnum Animate)
         {
+            if (this.rules == null)
+            {
+                return new CyrResult(name);
+            }
+
             CyrResult result;
 
             if (this.gender == GendersEnum.Feminine)
@@ -99,6 +104,11 @@ namespace Cyriller
 
         public CyrResult DeclinePlural(AnimatesEnum Animate)
         {
+            if (this.rules == null)
+            {
+                return new CyrResult(name);
+            }
+
             CyrResult result = new CyrResult(this.rules[17].Apply(this.name),
                 this.rules[18].Apply(this.name),
                 this.rules[19].Apply(this.name),

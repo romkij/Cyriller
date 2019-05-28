@@ -105,7 +105,19 @@ namespace Cyriller
 
             if (list == null || !list.Any())
             {
-                throw new CyrWordNotFoundException(Word);
+                if (CyrBehaviour.ThrowOnWordNotFound)
+                {
+                    throw new CyrWordNotFoundException(Word);
+                }
+                else
+                {
+                    return new CyrNoun(
+                        Word,
+                        GenderID.GetValueOrDefault(),
+                        AnimateID.GetValueOrDefault(),
+                        TypeID.GetValueOrDefault(),
+                        null);
+                }
             }
 
             IEnumerable<CyrNounCollectionRow> rows = list.Select(x => CyrNounCollectionRow.Parse(x));
@@ -135,7 +147,19 @@ namespace Cyriller
 
             if (row == null)
             {
-                throw new CyrWordNotFoundException(Word);
+                if (CyrBehaviour.ThrowOnWordNotFound)
+                {
+                    throw new CyrWordNotFoundException(Word);
+                }
+                else
+                {
+                    return new CyrNoun(
+                        Word,
+                        GenderID.GetValueOrDefault(),
+                        AnimateID.GetValueOrDefault(),
+                        TypeID.GetValueOrDefault(),
+                        null);
+                }
             }
 
             string[] parts = this.rules[row.RuleID].Split(new char[] { ',', '|' });
@@ -149,7 +173,7 @@ namespace Cyriller
         protected List<string> GetSimilarDetails(string Word, out string CollectionWord)
         {
             CyrData data = new CyrData();
-            
+
             CollectionWord = data.GetSimilar(Word, words.Keys.ToList());
 
             if (CollectionWord.IsNullOrEmpty())
